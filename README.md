@@ -143,7 +143,8 @@ This can be used as a much more flexible alternative to Redux because not every 
 import { useBusReducer } from "ts-bus/react";
 
 function Main(props: Props) {
-  // Automatically hook into bus passed in with BusProvider above in the tree
+  // Automatically hook into bus passed in with
+  // BusProvider above in the tree
   const state = useBusReducer(
     produce((state, action) => {
       switch (action.type) {
