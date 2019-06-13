@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "preversion:patch": "yarn build && cp package.json dist",
-    "version:patch": "npm version patch",
+    "prepatch": "yarn build && cp package.json dist",
+    "patch": "npm version patch",
     "release": "cd dist && npm publish"
   },
   "peerDependencies": {
