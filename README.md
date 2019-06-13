@@ -9,6 +9,8 @@ I wanted a system that
 - Is framework agnostic.
 - Could enable micro-frontends / microlithic architecture.
 - Can easily use React hooks to reduce state.
+- Does not conflate eventing with state management.
+- Has really good TypeScript support.
 
 ## Installation
 
