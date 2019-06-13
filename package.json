@@ -6,8 +6,7 @@
   "scripts": {
     "build": "tsc",
     "prepatch": "yarn build && cp package.json dist",
-    "patch": "npm version patch",
-    "release": "cd dist && npm publish"
+    "patch": "npm version patch"
   },
   "peerDependencies": {
     "react": "^16.8.6"
