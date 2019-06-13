@@ -12,6 +12,7 @@ fi
 
 yarn build
 npm version $1
+git push --tags
 cp README.md dist
 cp package.json dist
 cd dist
