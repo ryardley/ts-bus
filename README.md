@@ -2,6 +2,8 @@
 
 A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
 
+### Rationale
+
 Why did I write this?
 
 I wanted a system that
@@ -30,7 +32,7 @@ yarn add ts-bus
 
 ## Usage
 
-#### 1. Declare events
+#### Create a bus
 
 Create your EventBus globally somewhere:
 
@@ -39,6 +41,8 @@ Create your EventBus globally somewhere:
 import { EventBus } from "ts-bus";
 export const bus = new EventBus();
 ```
+
+#### Declare events
 
 Next create some Events:
 
@@ -63,7 +67,7 @@ export const firstEvent = defineEvent<FirstEvent>("FIRST_EVENT");
 
 _TIP_
 
-> I find putting the event type inline leads to more concise event definitions:
+> I find putting the event type inline within the definition leads to more concise event definition code
 
 ```ts
 // Inline example
@@ -82,16 +86,22 @@ Ok. Let's subscribe to our events
 import { firstEvent, otherEvent } from "./event";
 import { bus } from "./bus";
 
+// You can subscribe using the event factory function should you wish
 const unsubscribe = bus.subscribe(firstEvent, event => {
   const { id, label } = event.payload; // Event typing should be available
   doSomethingWithFirstEvent({ id, label });
+});
+
+// Or you can use plain old type strings
+bus.subscribe("OTHER_EVENT", event => {
+  doSomethingWithOtherEvent(event.payload.label);
 });
 
 // Unsubscribe after 20 seconds
 setTimeout(unsubscribe, 20 * 1000);
 ```
 
-#### 2. Publishing events
+#### Publishing events
 
 Now let's publish our events somewhere
 
@@ -111,7 +121,7 @@ function handleButtonRightClick() {
 
 _TIP:_
 
-> If you want to avoid the direct dependency with your event creator (lets say because of bounded context or micro-frontends) like in Redux you can use the event object:
+> If you want to avoid the direct dependency with your event creator you can use the plain event object:
 
 ```tsx
 bus.publish({
@@ -120,7 +130,7 @@ bus.publish({
 });
 ```
 
-Thats the basics of the `ts-bus`
+That's pretty much the basics of `ts-bus`
 
 ## Usage with React
 
