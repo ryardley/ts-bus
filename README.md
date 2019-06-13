@@ -79,7 +79,7 @@ export const otherEvent = defineEvent<{
 };>("OTHER_EVENT");
 ```
 
-#### 2. Subscription
+#### Subscription
 
 Ok. Let's subscribe to our events
 
