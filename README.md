@@ -2,6 +2,16 @@
 
 A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
 
+The following examples are in TypeScript but you can use this in JavaScript as well.
+
+## Installation
+
+Use your favourite npm client to install ts-bus. Types should be included.
+
+```bash
+yarn add ts-bus
+```
+
 ## Usage
 
 Create your EventBus globally somewhere:
@@ -67,5 +77,84 @@ function handleButtonClick() {
 
 function handleButtonRightClick() {
   bus.publish(otherEvent({ label: "You right clicked" }));
+}
+```
+
+## Usage with React
+
+```tsx
+import React from "react";
+import App from "./App";
+
+import { EventBus } from "ts-bus";
+import { BusProvider } from "ts-bus/react";
+
+// global bus
+const bus = new EventBus();
+
+// This wraps React Context and passes the bus to the `useBus` hook.
+export default () => (
+  <BusProvider value={bus}>
+    <App />
+  </BusProvider>
+);
+```
+
+```tsx
+// Dispatch from deep in your application somewhere...
+import { useBus } from "ts-bus/react";
+import { kickoffSomeProcess } from "./my-events";
+
+function ProcessButton(props) {
+  // Get the bus passed in from the top of the tree
+  const bus = useBus();
+
+  const handleClick = React.useCallback(() => {
+    // Fire the event
+    bus.publish(kickoffSomeProcess(props.data));
+  }, [bus]);
+
+  return <Button onClick={handleClick}>Go</Button>;
+}
+```
+
+If you want to avoid the direct dependency you can use the event object:
+
+```tsx
+bus.publish({ type: "KICKOFF_SOME_PROCESS", payload: props.data });
+```
+
+## Alternative to Redux with `useBusReducer`
+
+This can be used as a much more flexible alternative to Redux because not every event requires a corresponding state change. Also you can hook multiple frameworks together and create microfrontends with this technique.
+
+```tsx
+import { useBusReducer } from "ts-bus/react";
+
+function Main(props: Props) {
+  // Automatically hook into bus passed in with BusProvider above in the tree
+  const state = useBusReducer(
+    produce((state, action) => {
+      switch (action.type) {
+        case "TASK_MOVED": {
+          // ...
+          return state;
+        }
+        case "TASK_CREATED": {
+          // ...
+          return state;
+        }
+        case "TASK_UPDATED": {
+          // ...
+          return state;
+        }
+        default:
+          return state;
+      }
+    }),
+    initState
+  );
+
+  return <MyApp state={state}>{children}</MyApp>;
 }
 ```
