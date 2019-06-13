@@ -1,4 +1,18 @@
 #!/bin/bash
 
+if [ -z "$1" ]; then 
+  echo "Please provide update type: patch, minor major"
+  exit 1;
+fi
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Please ensure your git folder is clean";
+  exit 1;
+fi
+
+yarn build
+npm version $1
+cp README.md dist
+cp package.json dist
 cd dist
 npm publish
