@@ -1,6 +1,4 @@
-<br/>
-<div style="display:flex;width:100%;flex-direction:row;justify-content:center"><img src="logo.png" width="200" height="200"/></div>
-<br/>
+<img src="logo.png" width="200" height="200"/>
 
 # ts-bus
 
