@@ -1,13 +1,13 @@
 {
   "name": "ts-bus",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "preversion:patch": "yarn build && cp package.json dist",
     "version:patch": "npm version patch",
-    "publish": "cd dist && npm publish"
+    "release": "cd dist && npm publish"
   },
   "peerDependencies": {
     "react": "^16.8.6"
