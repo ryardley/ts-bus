@@ -16,10 +16,6 @@ I needed a system that
 - Does not conflate eventing with state management.
 - Has really good TypeScript support.
 
-### Alternatives
-
-I think the main alternative here would be to use a system like RxJS but I wanted something I can use for most projects and I did not want to bring in RxJS for every single project.
-
 ## Installation
 
 Use your favourite npm client to install ts-bus. Types are included automatically.
