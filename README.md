@@ -2,7 +2,13 @@
 
 A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
 
-The following examples are in TypeScript but you can use this in JavaScript as well.
+Why did I write this?
+
+I wanted a system that
+
+- Is framework agnostic.
+- Could enable micro-frontends / microlithic architecture.
+- Can easily use React hooks to reduce state.
 
 ## Installation
 
@@ -21,6 +27,8 @@ yarn add ts-bus
 ```
 
 ## Usage
+
+#### 1. Declare events
 
 Create your EventBus globally somewhere:
 
@@ -45,21 +53,27 @@ type FirstEvent = {
 };
 
 export const firstEvent = createEventCreator<FirstEvent>("FIRST_EVENT");
-
-// Personally I prefer to put the event type
-// inline as it is more concise:
-export const otherEvent = createEventCreator<{
-  type: "OTHER_EVENT";
-  payload: { label:string }
-};>("OTHER_EVENT");
-
 // Note we have to pass in a string as typescript does
 // not allow for a way to create a string from typeland
 // This is typed however so you should have
 // autocompletion and should not find yourself making errors
 ```
 
-Let's subscribe to our events
+_TIP_
+
+> I find putting the event type inline leads to more concise event definitions:
+
+```ts
+// Inline example
+export const otherEvent = createEventCreator<{
+  type: "OTHER_EVENT";
+  payload: { label:string }
+};>("OTHER_EVENT");
+```
+
+#### 2. Subscription
+
+Ok. Let's subscribe to our events
 
 ```ts
 // main.ts
@@ -75,7 +89,9 @@ const unsubscribe = bus.subscribe(firstEvent, event => {
 setTimeout(unsubscribe, 20 * 1000);
 ```
 
-Elsewhere publish your event
+#### 2. Publishing events
+
+Now let's publish our events somewhere
 
 ```ts
 // publisher.ts
@@ -91,7 +107,26 @@ function handleButtonRightClick() {
 }
 ```
 
+_TIP:_
+
+> If you want to avoid the direct dependency with your event creator (lets say because of bounded context or micro-frontends) like in Redux you can use the event object:
+
+```tsx
+bus.publish({
+  type: "KICKOFF_SOME_PROCESS",
+  payload: props.data
+});
+```
+
+Thats the basics of the `ts-bus`
+
 ## Usage with React
+
+Included with `ts-bus` are some React hooks and helpers.
+
+#### BusProvider
+
+Wrap your app using the `BusProvider`
 
 ```tsx
 import React from "react";
@@ -111,6 +146,10 @@ export default () => (
 );
 ```
 
+#### useBus
+
+Access the bus instance with `useBus`
+
 ```tsx
 // Dispatch from deep in your application somewhere...
 import { useBus } from "ts-bus/react";
@@ -129,13 +168,7 @@ function ProcessButton(props) {
 }
 ```
 
-If you want to avoid the direct dependency you can use the event object:
-
-```tsx
-bus.publish({ type: "KICKOFF_SOME_PROCESS", payload: props.data });
-```
-
-## Alternative to Redux with `useBusReducer`
+#### useBusReducer
 
 This can be used as a much more flexible alternative to Redux because not every event requires a corresponding state change. Also you can hook multiple frameworks together and create microfrontends with this technique.
 
