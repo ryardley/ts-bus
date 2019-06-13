@@ -6,6 +6,9 @@
   "scripts": {
     "build": "tsc"
   },
+  "repository": {
+    "url": "https://github.com/ryardley/ts-bus"
+  },
   "peerDependencies": {
     "react": "^16.8.6"
   },
