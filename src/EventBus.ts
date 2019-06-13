@@ -6,7 +6,7 @@ type EventCreatorFn<T extends { type: string }> = ((...arg: any[]) => T) & {
   eventType: T["type"];
 };
 
-export function createEventCreator<T extends BusEvent>(type: T["type"]) {
+export function defineEvent<T extends BusEvent>(type: T["type"]) {
   const eventCreator = (payload: T["payload"]) => ({ type, payload });
   eventCreator.eventType = type;
   return eventCreator as EventCreatorFn<T>;

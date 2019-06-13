@@ -44,7 +44,7 @@ Next create some Events:
 
 ```ts
 // events.ts
-import { createEventCreator } from "ts-bus";
+import { defineEvent } from "ts-bus";
 
 type FirstEvent = {
   type: "FIRST_EVENT";
@@ -54,7 +54,7 @@ type FirstEvent = {
   };
 };
 
-export const firstEvent = createEventCreator<FirstEvent>("FIRST_EVENT");
+export const firstEvent = defineEvent<FirstEvent>("FIRST_EVENT");
 // Note we have to pass in a string as typescript does
 // not allow for a way to create a string from typeland
 // This is typed however so you should have
@@ -67,7 +67,7 @@ _TIP_
 
 ```ts
 // Inline example
-export const otherEvent = createEventCreator<{
+export const otherEvent = defineEvent<{
   type: "OTHER_EVENT";
   payload: { label:string }
 };>("OTHER_EVENT");

@@ -1,1 +1,1 @@
-export { EventBus, createEventCreator } from "./EventBus";
+export { EventBus, defineEvent } from "./EventBus";
