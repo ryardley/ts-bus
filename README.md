@@ -4,15 +4,19 @@ A lightweight JavaScript/TypeScript event bus to help manage your application ar
 
 ### Rationale
 
-Why did I write this?
+We want to write loosely coupled highly cohesive applications and one of the best and easiest ways to do that is to use an event bus as a management layer for our applications. 
 
-I wanted a system that
+I needed a system that
 
-- Is framework agnostic.
+- Is framework agnostic can support Vue, React or Angular.
 - Could enable micro-frontends / microlithic architecture.
-- Can easily use React hooks to reduce state.
+- Can easily use React hooks to reduce state in the case of React.
 - Does not conflate eventing with state management.
 - Has really good TypeScript support.
+
+### Alternatives
+
+I think the main alternative here would be to use a system like RxJS but I wanted something I can use for most projects and I did not want to bring in RxJS for every single project.
 
 ## Installation
 
