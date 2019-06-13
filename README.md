@@ -6,7 +6,15 @@ The following examples are in TypeScript but you can use this in JavaScript as w
 
 ## Installation
 
-Use your favourite npm client to install ts-bus. Types should be included.
+Use your favourite npm client to install ts-bus. Types are included automatically.
+
+Npm:
+
+```bash
+npm install ts-bus
+```
+
+Yarn:
 
 ```bash
 yarn add ts-bus
@@ -38,14 +46,17 @@ type FirstEvent = {
 
 export const firstEvent = createEventCreator<FirstEvent>("FIRST_EVENT");
 
-// Personally I prefer to put the event type inline as it is more concise:
+// Personally I prefer to put the event type
+// inline as it is more concise:
 export const otherEvent = createEventCreator<{
   type: "OTHER_EVENT";
   payload: { label:string }
 };>("OTHER_EVENT");
 
-// Note we have to pass in a string as typescript does not allow for a way to create a string from typeland
-// This is typed however so you should have autocompletion and should not find yourself making errors
+// Note we have to pass in a string as typescript does
+// not allow for a way to create a string from typeland
+// This is typed however so you should have
+// autocompletion and should not find yourself making errors
 ```
 
 Let's subscribe to our events
