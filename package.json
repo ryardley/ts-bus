@@ -4,7 +4,10 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "preversion:patch": "yarn build && cp package.json dist",
+    "version:patch": "npm version patch",
+    "publish": "cd dist && npm publish"
   },
   "peerDependencies": {
     "react": "^16.8.6"
