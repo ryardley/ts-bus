@@ -4,17 +4,46 @@
 
 A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
 
+### Example
+
+```ts
+// Define Event
+export const someEvent = defineEvent<{
+  type: "SOME_EVENT";
+  payload: { url: string };
+}>("SOME_EVENT");
+
+// Create bus
+const bus = new EventBus();
+
+// Subscribe
+bus.subscribe(someEvent, event => {
+  alert(event.payload.url);
+});
+
+// Publish
+bus.publish(someEvent({ url: "http://github.com" }));
+```
+
 ### Rationale
 
 We want to write loosely coupled highly cohesive applications and one of the best and easiest ways to do that is to use an event bus as a management layer for our applications.
 
-I needed a system that
+This is the kind of thing that you could use effectively in any application.
+
+For my purposes I wanted a system that:
 
 - Is framework agnostic can support Vue, React or Angular.
 - Could enable micro-frontends / microlithic architecture.
 - Can easily use React hooks to reduce state in the case of React.
 - Does not conflate eventing with state management.
 - Has really good TypeScript support.
+
+### Alternatives
+
+- Redux - conflates state management with eventing and causes complexity around async as a result. React comes with state management out of the box these days anyway.
+- RxJS - could make a great event bus but feels too heavy handed for use with pretty much every project.
+- Node `events` - is a little too much API for what I need here. This lib actually decorates the `EventEmitter2` package. In the future I may remove it to become dependency free.
 
 ## Installation
 
