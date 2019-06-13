@@ -1,0 +1,19 @@
+{
+  "name": "ts-bus",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "dependencies": {
+    "eventemitter2": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.19",
+    "typescript": "^3.5.1"
+  }
+}
