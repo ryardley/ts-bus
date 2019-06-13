@@ -1,10 +1,12 @@
-# TS Bus
+<img src="logo.png" width="90"/>
+
+# ts-bus
 
 A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
 
 ### Rationale
 
-We want to write loosely coupled highly cohesive applications and one of the best and easiest ways to do that is to use an event bus as a management layer for our applications. 
+We want to write loosely coupled highly cohesive applications and one of the best and easiest ways to do that is to use an event bus as a management layer for our applications.
 
 I needed a system that
 
