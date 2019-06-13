@@ -81,7 +81,7 @@ export const otherEvent = defineEvent<{
 
 #### Subscription
 
-Ok. Let's subscribe to our events
+Let's subscribe to our events
 
 ```ts
 // main.ts
