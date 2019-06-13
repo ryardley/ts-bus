@@ -2,7 +2,7 @@
 
 # ts-bus
 
-A lightweight JavaScript/TypeScript event bus to help manage your application architecture.
+A lightweight TypeScript event bus to help manage your application architecture.
 
 ### Example
 
