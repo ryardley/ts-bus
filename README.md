@@ -164,7 +164,7 @@ bus.publish({
 
 That's pretty much the basics of `ts-bus`
 
-## Usage with React
+## React extensions
 
 Included with `ts-bus` are some React hooks and helpers.
 
