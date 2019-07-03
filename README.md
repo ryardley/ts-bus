@@ -7,6 +7,8 @@ A lightweight TypeScript event bus to help manage your application architecture.
 ### Example
 
 ```ts
+import { EventBus, defineEvent } from "ts-bus";
+
 // Define Event
 export const someEvent = defineEvent<{
   type: "SOME_EVENT";
@@ -14,7 +16,7 @@ export const someEvent = defineEvent<{
 }>("SOME_EVENT");
 
 // Create bus
-import { EventBus } from "ts-bus";
+
 const bus = new EventBus();
 
 // Subscribe
