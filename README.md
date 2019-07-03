@@ -166,7 +166,7 @@ That's pretty much the basics of `ts-bus`
 
 ## React extensions
 
-Included with `ts-bus` are some React hooks and helpers.
+Included with `ts-bus` are some React hooks and helpers that provide a bus context as well as facilitate state management within React.
 
 #### BusProvider
 
