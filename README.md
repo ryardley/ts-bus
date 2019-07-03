@@ -14,6 +14,7 @@ export const someEvent = defineEvent<{
 }>("SOME_EVENT");
 
 // Create bus
+import { EventBus } from "ts-bus";
 const bus = new EventBus();
 
 // Subscribe
