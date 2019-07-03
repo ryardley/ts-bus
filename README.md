@@ -10,13 +10,14 @@ A lightweight TypeScript event bus to help manage your application architecture.
 import { EventBus, defineEvent } from "ts-bus";
 
 // Define Event
-export const someEvent = defineEvent<{
+type SomeEvent = {
   type: "SOME_EVENT";
   payload: { url: string };
-}>("SOME_EVENT");
+};
+
+export const someEvent = defineEvent<SomeEvent>("SOME_EVENT");
 
 // Create bus
-
 const bus = new EventBus();
 
 // Subscribe
