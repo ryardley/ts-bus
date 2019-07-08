@@ -2,7 +2,9 @@
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
 import { BusEvent } from "./types";
 
-type EventCreatorFn<T extends { type: string }> = ((...arg: any[]) => T) & {
+type EventCreatorFn<T extends { type: string; payload: any }> = ((
+  payload: T["payload"]
+) => T) & {
   eventType: T["type"];
 };
 

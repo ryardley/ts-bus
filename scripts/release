@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z "$1" ]; then 
   echo "Please provide update type: patch, minor major"
   exit 1;
@@ -10,6 +12,7 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1;
 fi
 
+yarn test
 yarn build
 npm version $1
 git push --tags

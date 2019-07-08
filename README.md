@@ -46,7 +46,7 @@ For my purposes I wanted a system that:
 ### Alternatives
 
 - Redux - conflates state management with eventing and causes complexity around async as a result. React comes with state management out of the box these days anyway.
-- RxJS - could make a great event bus but feels too heavy handed for use with pretty much every project.
+- RxJS - could make a great event bus but feels too heavy handed for use with many projects.
 - Node `events` - is a little too much API for what I need here. This lib actually decorates the `EventEmitter2` package. In the future I may remove it to become dependency free.
 
 ## Installation
