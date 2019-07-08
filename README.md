@@ -26,7 +26,7 @@ bus.subscribe(someEvent, event => {
 });
 
 // Publish
-bus.publish(someEvent({ url: "http://github.com" }));
+bus.publish(someEvent({ url: "https://github.com" }));
 ```
 
 ### Rationale
