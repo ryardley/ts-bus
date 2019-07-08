@@ -99,6 +99,5 @@ describe("unsubsubscribe from events", () => {
     bus.publish(event);
 
     expect(handleSubscription.mock.calls.length).toBe(1);
-    expect(0).toBe(1); // test that this blocks release
   });
 });
