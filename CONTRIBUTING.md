@@ -1,3 +1,9 @@
+## Running tests
+
+```bash
+yarn test
+```
+
 ## Creating a release
 
 Ensure a clean git branch and run the following:
