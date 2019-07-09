@@ -217,7 +217,7 @@ function ProcessButton(props) {
 
 #### useBusReducer
 
-This can be used as a much more flexible alternative to Redux because not every event requires a corresponding state change. Also you can hook multiple frameworks together and create microfrontends with this technique.
+This connects state changes to bus events via a state reducer function.
 
 ```tsx
 import { useBusReducer } from "ts-bus/react";
