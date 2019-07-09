@@ -226,7 +226,7 @@ function Main(props: Props) {
   // Automatically hook into bus passed in with
   // BusProvider above in the tree
   const state = useBusReducer(
-    produce((state, action) => {
+    produce(initState, (state, action) => {
       switch (action.type) {
         case "TASK_MOVED": {
           // ...
@@ -243,8 +243,7 @@ function Main(props: Props) {
         default:
           return state;
       }
-    }),
-    initState
+    })
   );
 
   return <MyApp state={state}>{children}</MyApp>;
