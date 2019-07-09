@@ -225,26 +225,24 @@ import { useBusReducer } from "ts-bus/react";
 function Main(props: Props) {
   // Automatically hook into bus passed in with
   // BusProvider above in the tree
-  const state = useBusReducer(
-    produce(initState, (state, action) => {
-      switch (action.type) {
-        case "TASK_MOVED": {
-          // ...
-          return state;
-        }
-        case "TASK_CREATED": {
-          // ...
-          return state;
-        }
-        case "TASK_UPDATED": {
-          // ...
-          return state;
-        }
-        default:
-          return state;
+  const state = useBusReducer(initState, (state, action) => {
+    switch (action.type) {
+      case "TASK_MOVED": {
+        // ...
+        return state;
       }
-    })
-  );
+      case "TASK_CREATED": {
+        // ...
+        return state;
+      }
+      case "TASK_UPDATED": {
+        // ...
+        return state;
+      }
+      default:
+        return state;
+    }
+  });
 
   return <MyApp state={state}>{children}</MyApp>;
 }
