@@ -9,7 +9,7 @@ function defaultSubscriber<E extends BusEvent>(
   dispatch: DispatchFn<E>,
   bus: EventBus
 ) {
-  bus.subscribe<E>("*", dispatch);
+  bus.subscribe<E>("**", dispatch);
 }
 
 export function useBusReducer<E extends BusEvent = BusEvent, T = any>(

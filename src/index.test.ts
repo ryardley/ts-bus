@@ -110,7 +110,8 @@ describe("Basic usage", () => {
 describe("namespaced events", () => {
   it("should handle namespaced events", () => {
     // mock subscription
-    const handleSubscription = jest.fn();
+    const handleAllSubscriptions = jest.fn();
+    const handleThingsSubscriptions = jest.fn();
 
     type ThingsSave = {
       type: "things.save";
@@ -124,13 +125,26 @@ describe("namespaced events", () => {
     };
     const createEditEvent = defineEvent<ThingsEdit>("things.edit");
 
+    type Frogs = {
+      type: "frogs";
+      payload: string;
+    };
+    const createFrogs = defineEvent<Frogs>("frogs");
+
     const bus = new EventBus();
-    bus.subscribe("things.*", handleSubscription);
+    bus.subscribe("**", handleAllSubscriptions);
+    bus.subscribe("things.*", handleThingsSubscriptions);
 
     bus.publish(createEditEvent("Foo"));
     bus.publish(createSaveEvent("Bar"));
+    bus.publish(createFrogs("Gribbit"));
 
-    expect(handleSubscription.mock.calls).toEqual([
+    expect(handleAllSubscriptions.mock.calls).toEqual([
+      [{ payload: "Foo", type: "things.edit" }],
+      [{ payload: "Bar", type: "things.save" }],
+      [{ payload: "Gribbit", type: "frogs" }]
+    ]);
+    expect(handleThingsSubscriptions.mock.calls).toEqual([
       [{ payload: "Foo", type: "things.edit" }],
       [{ payload: "Bar", type: "things.save" }]
     ]);
