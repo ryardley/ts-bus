@@ -38,6 +38,73 @@ describe("Basic usage", () => {
 
     expect(handleSubscription.mock.calls.length).toBe(4);
   });
+  describe("metadata", () => {
+    it("should be able to send metadata", () => {
+      // mock subscription
+      const handleSubscription = jest.fn();
+
+      // create event creator
+      type MyEvent = {
+        type: "myevent";
+        payload: { foo: string };
+      };
+
+      const myEventCreator = defineEvent<MyEvent>("myevent");
+
+      // create a bus
+      const bus = new EventBus();
+      bus.subscribe(myEventCreator, handleSubscription);
+
+      // create n event
+      const event = myEventCreator({ foo: "Hello" });
+
+      // Call it once
+      bus.publish(event, { remote: true });
+      expect(handleSubscription.mock.calls).toEqual([
+        [
+          {
+            type: "myevent",
+            payload: { foo: "Hello" },
+            meta: { remote: true }
+          }
+        ]
+      ]);
+    });
+  });
+  it("should be able to append metadata", () => {
+    // mock subscription
+    const handleSubscription = jest.fn();
+
+    // create event creator
+    type MyEvent = {
+      type: "myevent";
+      payload: { foo: string };
+    };
+
+    const myEventCreator = defineEvent<MyEvent>("myevent");
+
+    // create a bus
+    const bus = new EventBus();
+    bus.subscribe(myEventCreator, handleSubscription);
+
+    // create n event
+    const event = myEventCreator({ foo: "Hello" });
+
+    // Call it once
+    bus.publish(
+      { ...event, meta: { remote: false, thing: "foo" } },
+      { remote: true }
+    );
+    expect(handleSubscription.mock.calls).toEqual([
+      [
+        {
+          type: "myevent",
+          payload: { foo: "Hello" },
+          meta: { remote: true, thing: "foo" }
+        }
+      ]
+    ]);
+  });
 });
 
 describe("namespaced events", () => {
