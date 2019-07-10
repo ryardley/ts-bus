@@ -281,3 +281,7 @@ function Main(props: Props) {
   return <MyApp state={state}>{children}</MyApp>;
 }
 ```
+
+# Example applications
+
+For an example application feel free to explore the [KanBan example](examples/kanban).
