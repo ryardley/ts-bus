@@ -4,9 +4,9 @@ This is a quick throw together app to demonstrate how you might put together an 
 
 It demonstrates:
 
-- Synchronising React Router with ts-bus.
-- Event synchronisation between browser and server
-- Using `useBusReducer`
+- Synchronising React Router with ts-bus. [here](https://github.com/ryardley/ts-bus/blob/master/examples/kanban/src/modules/routes/app.tsx#L12)
+- Event synchronisation between browser and server. [here](https://github.com/ryardley/ts-bus/blob/master/examples/kanban/src/modules/event-sync/app.tsx#L8)
+- Using `useBusReducer` [here](https://github.com/ryardley/ts-bus/blob/master/examples/kanban/src/modules/board/app.tsx#L9)
 
 ## Installation
 
