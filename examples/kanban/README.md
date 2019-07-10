@@ -1,5 +1,8 @@
 # TS-Bus KanBan
+
 #### Example ts-bus driven app
+
+<img src="demo.gif" />
 
 This is a quick throw together app to demonstrate how you might put together an event bridge architecture using ts-bus and socket.io. It is not comprehensive. There are bugs. I plan to work on this when I get a chance and add things like auth etc. Happy for input / pull requests.
 
