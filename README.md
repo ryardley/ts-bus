@@ -111,8 +111,7 @@ export const taskLabelUpdated = defineEvent<{
   type: "task.label.updated";
   payload: {
     id: string;
-    listId: string;
-    value: string;
+    label: string;
   };
 }>("task.label.updated");
 ```
@@ -123,16 +122,16 @@ Let's subscribe to our events
 
 ```ts
 // main.ts
-import { firstEvent, taskCreated } from "./event";
+import { taskLabelUpdated, taskCreated } from "./event";
 import { bus } from "./bus";
 
 // You can subscribe using the event factory function should you wish
-const unsubscribe = bus.subscribe(firstEvent, event => {
+const unsubscribe = bus.subscribe(taskLabelUpdated, event => {
   const { id, label } = event.payload; // Event typing should be available
   doSomethingWithLabelAndId({ id, label });
 });
 
-// Unsubscribe to firstEvent after 20 seconds
+// Unsubscribe to taskLabelUpdated after 20 seconds
 setTimeout(unsubscribe, 20 * 1000);
 
 // Or you can use plain old type strings
@@ -148,11 +147,11 @@ Now let's publish our events somewhere
 
 ```ts
 // publisher.ts
-import { firstEvent, taskCreated } from "./events";
+import { taskLabelUpdated, taskCreated } from "./events";
 import { bus } from "./bus";
 
-function handleButtonClick() {
-  bus.publish(firstEvent({ id: "my-id", label: "This is an event" }));
+function handleUpdateButtonClicked() {
+  bus.publish(taskLabelUpdated({ id: "638", label: "This is an event" }));
 }
 
 function handleDishesButtonClicked() {
