@@ -10,6 +10,8 @@ It demonstrates:
 
 ## Installation
 
+Clone the repo
+Go to the folder
 Install dependencies
 
 ```
@@ -18,10 +20,14 @@ cd ts-bus/examples/kanban
 yarn
 ```
 
-### To run
+### Launch
 
 ```
 yarn start
 ```
 
 Then open up two browser windows side by side and watch the events being sent to both browser windows.
+
+### Production
+
+This app is meant to be a local demo and has no production build yet.
