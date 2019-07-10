@@ -85,15 +85,16 @@ Next create some Events:
 // events.ts
 import { defineEvent } from "ts-bus";
 
-type FirstEvent = {
-  type: "FIRST_EVENT";
+type TaskCreatedEvent = {
+  type: "task.created";
   payload: {
     id: string;
-    label: string;
+    listId: string;
+    value: string;
   };
 };
 
-export const firstEvent = defineEvent<FirstEvent>("FIRST_EVENT");
+export const taskCreated = defineEvent<TaskCreatedEvent>("task.created");
 // Note we have to pass in a string as typescript does
 // not allow for a way to create a string from typeland
 // This is typed however so you should have
@@ -106,10 +107,14 @@ _TIP_
 
 ```ts
 // Inline example
-export const otherEvent = defineEvent<{
-  type: "OTHER_EVENT";
-  payload: { label:string }
-};>("OTHER_EVENT");
+export const taskLabelUpdated = defineEvent<{
+  type: "task.label.updated";
+  payload: {
+    id: string;
+    listId: string;
+    value: string;
+  };
+}>("task.label.updated");
 ```
 
 #### Subscription
@@ -118,22 +123,23 @@ Let's subscribe to our events
 
 ```ts
 // main.ts
-import { firstEvent, otherEvent } from "./event";
+import { firstEvent, taskCreated } from "./event";
 import { bus } from "./bus";
 
 // You can subscribe using the event factory function should you wish
 const unsubscribe = bus.subscribe(firstEvent, event => {
   const { id, label } = event.payload; // Event typing should be available
-  doSomethingWithFirstEvent({ id, label });
+  doSomethingWithLabelAndId({ id, label });
 });
+
+// Unsubscribe to firstEvent after 20 seconds
+setTimeout(unsubscribe, 20 * 1000);
 
 // Or you can use plain old type strings
-bus.subscribe("OTHER_EVENT", event => {
-  doSomethingWithOtherEvent(event.payload.label);
+bus.subscribe("task.created", event => {
+  const { listId, id, value } = event.payload;
+  appendTaskToList(listId, { id, value });
 });
-
-// Unsubscribe after 20 seconds
-setTimeout(unsubscribe, 20 * 1000);
 ```
 
 #### Publishing events
@@ -142,15 +148,17 @@ Now let's publish our events somewhere
 
 ```ts
 // publisher.ts
-import { firstEvent, otherEvent } from "./events";
+import { firstEvent, taskCreated } from "./events";
 import { bus } from "./bus";
 
 function handleButtonClick() {
   bus.publish(firstEvent({ id: "my-id", label: "This is an event" }));
 }
 
-function handleButtonRightClick() {
-  bus.publish(otherEvent({ label: "You right clicked" }));
+function handleDishesButtonClicked() {
+  bus.publish(
+    taskCreated({ id: "123", listId: "345", value: "Do the dishes" })
+  );
 }
 ```
 
@@ -160,7 +168,7 @@ If you want to avoid the direct dependency with your event creator you can use t
 
 ```tsx
 bus.publish({
-  type: "KICKOFF_SOME_PROCESS",
+  type: "kickoff.some.process",
   payload: props.data
 });
 ```
@@ -171,18 +179,28 @@ Lets say you have received a remote event from a websocket and you need to preve
 
 ```ts
 // get an event from a socket
-socket.on("event-sync", (event: BusEvent<string>) => {
+socket.on("event-sync", (event: BusEvent<any>) => {
   bus.publish(event, { remote: true });
 });
 
 // Prevent sending a event-sync if the event was remote
-bus.subscribe("*", event => {
+bus.subscribe("shared.*", event => {
   if (event.meta && event.meta.remote) return;
   socket.emit("event-sync", event);
 });
 ```
 
-That's pretty much the basics of `ts-bus`
+### Wildcard syntax
+
+You can namespace your events using period delimeters. For example:
+
+```
+"foo.*" matches "foo.bar"
+"foo.*.thing" matches "foo.fing.thing"
+"*" matches everything
+```
+
+This is inherited directly from EventEmitter2 which ts-bus currently uses under the hood. I would like to investigate a stronger pattern matching syntax in the future that can take account of payload and event metadata. Submit an issue if you have ideas for syntax etc.
 
 ## React extensions
 
