@@ -9,7 +9,10 @@ type EventCreatorFn<T extends { type: string; payload: any }> = ((
 };
 
 export function defineEvent<T extends BusEvent>(type: T["type"]) {
-  const eventCreator = (payload: T["payload"]) => ({ type, payload });
+  const eventCreator = (payload: T["payload"]) => ({
+    type,
+    payload
+  });
   eventCreator.eventType = type;
   return eventCreator as EventCreatorFn<T>;
 }
@@ -17,8 +20,11 @@ export function defineEvent<T extends BusEvent>(type: T["type"]) {
 export class EventBus {
   emitter = new EventEmitter({ wildcard: true });
 
-  publish = <T extends BusEvent>(event: T) => {
-    this.emitter.emit(event.type, event);
+  publish = <T extends BusEvent>(event: T, meta?: any) => {
+    this.emitter.emit(
+      event.type,
+      !meta ? event : { ...event, meta: { ...event.meta, ...meta } }
+    );
   };
 
   subscribe = <T extends BusEvent>(

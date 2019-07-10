@@ -154,14 +154,31 @@ function handleButtonRightClick() {
 }
 ```
 
-_TIP:_
+### Using a plain event object
 
-> If you want to avoid the direct dependency with your event creator you can use the plain event object:
+If you want to avoid the direct dependency with your event creator you can use the plain event object:
 
 ```tsx
 bus.publish({
   type: "KICKOFF_SOME_PROCESS",
   payload: props.data
+});
+```
+
+### Republishing events
+
+Lets say you have received a remote event from a websocket and you need to prevent it from being automatically redispatched you can provide custom metadata with each publication of an event to prevent re-emmission of events over the socket.
+
+```ts
+// get an event from a socket
+socket.on("event-sync", (event: BusEvent<string>) => {
+  bus.publish(event, { remote: true });
+});
+
+// Prevent sending a event-sync if the event was remote
+bus.subscribe("*", event => {
+  if (event.meta && event.meta.remote) return;
+  socket.emit("event-sync", event);
 });
 ```
 
