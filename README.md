@@ -73,7 +73,7 @@ Yarn:
 yarn add ts-bus
 ```
 
-# Example applications
+## Example applications
 
 To explore an example of ts-bs used in context pease see the [KanBan example](examples/kanban).
 
