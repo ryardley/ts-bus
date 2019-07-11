@@ -2,6 +2,8 @@
 
 # ts-bus
 
+[![Build Status](https://travis-ci.org/ryardley/ts-bus.svg?branch=master)](https://travis-ci.org/ryardley/ts-bus)
+
 A lightweight TypeScript event bus to help manage your application architecture.
 
 ### Example
