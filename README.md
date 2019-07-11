@@ -255,31 +255,31 @@ function ProcessButton(props) {
 This connects state changes to bus events via a state reducer function.
 
 ```tsx
-import { useBusReducer } from "ts-bus/react";
+import { useBus, useBusReducer } from "ts-bus/react";
 
-function Main(props: Props) {
-  // Automatically hook into bus passed in with
-  // BusProvider above in the tree
-  const state = useBusReducer(initState, (state, action) => {
-    switch (action.type) {
-      case "TASK_MOVED": {
-        // ...
-        return state;
-      }
-      case "TASK_CREATED": {
-        // ...
-        return state;
-      }
-      case "TASK_UPDATED": {
-        // ...
-        return state;
-      }
-      default:
-        return state;
-    }
-  });
+const initialState = {count: 0};
 
-  return <MyApp state={state}>{children}</MyApp>;
+function reducer(state, event) {
+  switch (event.type) {
+    case 'counter.increment':
+      return {count: state.count + 1};
+    case 'counter.decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const bus = useBus();
+  const state = useBusReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => bus.publish({type: 'counter.increment'})}>+</button>
+      <button onClick={() => bus.publish({type: 'counter.decrement'})}>-</button>
+    </>
+  );
 }
 ```
 
