@@ -285,7 +285,7 @@ function reducer(state, event) {
 
 function Counter() {
   const bus = useBus();
-  const state = useBusReducer(reducer, initialState);
+  const state = useBusReducer(initialState, reducer);
   return (
     <>
       Count: {state.count}
