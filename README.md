@@ -1,6 +1,10 @@
-<img src="logo.png" width="200" height="200"/>
+<p align="center">
+  <img src="logo.png" width="200" height="200"/>
+</p>
 
-# ts-bus
+<h1 align="center">
+ts-bus
+</h1>
 
 [![Build Status](https://travis-ci.org/ryardley/ts-bus.svg?branch=master)](https://travis-ci.org/ryardley/ts-bus)
 [![codecov](https://codecov.io/gh/ryardley/ts-bus/branch/master/graph/badge.svg)](https://codecov.io/gh/ryardley/ts-bus)
