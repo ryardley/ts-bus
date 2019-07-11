@@ -10725,10 +10725,10 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.4.tgz#3b52b1f13924f460c3fbfd0df69b587dbcbc762e"
   integrity sha512-tdzBRDGWcI1OpPVmChbdSKhvSVurznZ8X36AYURAcl+0o2ldlCY2XPzyXNNxwJwwyIU+rIglTCG4kxtNKBQH7Q==
 
-ts-bus@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ts-bus/-/ts-bus-0.2.1.tgz#f606dd6f986ba0b80a36c96df1ce4feef66d989e"
-  integrity sha512-h0+J5mMcinjL0P8WG6i7mY9k3yfXj0Dl2CeFv4nPXhpQAe1rHwk/v1LlaBoA0/kI4H6bEqUYldWKGFzIslaMlQ==
+ts-bus@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/ts-bus/-/ts-bus-0.2.2.tgz#8f39b95c2e7d3d0072f1f40eba03a8ed399d2efa"
+  integrity sha512-yX0TImmJm1V2cHmrMckesWVFrEmWG9lZEeVhkVPhL3NG5UZU/lhp92zCBAGsXFcZvwL0j/CLtcY2RcQhg2g88Q==
   dependencies:
     eventemitter2 "^5.0.1"
 
