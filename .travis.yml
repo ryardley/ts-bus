@@ -7,3 +7,7 @@ node_js:
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
+scripts:
+  - npm install codecov -g
+after_success:
+  - codecov
