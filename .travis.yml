@@ -7,7 +7,9 @@ node_js:
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
-scripts:
-  - npm install codecov -g
+script:
+  yarn test
+env: 
+  CODECOV_TOKEN=74d19184-dc30-4935-a0cf-a8945bd3884b
 after_success:
   - codecov
