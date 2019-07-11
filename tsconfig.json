@@ -10,7 +10,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "isolatedModules": false,
-    "declaration": true
+    "declaration": true,
+    "sourceMap": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
