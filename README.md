@@ -65,6 +65,10 @@ Yarn:
 yarn add ts-bus
 ```
 
+# Example applications
+
+To explore an example of ts-bs used in context pease see the [KanBan example](examples/kanban).
+
 ## Usage
 
 #### Create a bus
@@ -283,6 +287,3 @@ function Counter() {
 }
 ```
 
-# Example applications
-
-For an example application feel free to explore the [KanBan example](examples/kanban).
