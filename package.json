@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "url": "https://github.com/ryardley/ts-bus"
