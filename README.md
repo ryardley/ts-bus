@@ -42,7 +42,7 @@ bus.publish(someEvent({ url: "https://github.com" }));
 
 We want to write loosely coupled highly cohesive applications and one of the best and easiest ways to do that is to use an event bus as a management layer for our applications.
 
-This is the kind of thing that you could use effectively in any application.
+This is the kind of thing that you could use effectively in most application.
 
 For my purposes I wanted a system that:
 
