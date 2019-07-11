@@ -4,6 +4,7 @@
 
 [![Build Status](https://travis-ci.org/ryardley/ts-bus.svg?branch=master)](https://travis-ci.org/ryardley/ts-bus)
 [![codecov](https://codecov.io/gh/ryardley/ts-bus/branch/master/graph/badge.svg)](https://codecov.io/gh/ryardley/ts-bus)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ryardley/ts-bus/blob/master/LICENSE)
 
 A lightweight TypeScript event bus to help manage your application architecture.
 
