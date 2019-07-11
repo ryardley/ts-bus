@@ -1,16 +1,17 @@
 <p align="center">
-  <img src="logo.png" width="200" height="200"/>
+  <img src="logo.png" width="100" height="100"/>
 </p>
 
 <h1 align="center">
 ts-bus
 </h1>
 
+#### A lightweight TypeScript event bus to help manage your application architecture
+
 [![Build Status](https://travis-ci.org/ryardley/ts-bus.svg?branch=master)](https://travis-ci.org/ryardley/ts-bus)
 [![codecov](https://codecov.io/gh/ryardley/ts-bus/branch/master/graph/badge.svg)](https://codecov.io/gh/ryardley/ts-bus)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ryardley/ts-bus/blob/master/LICENSE)
 
-A lightweight TypeScript event bus to help manage your application architecture.
 
 ### Example
 
