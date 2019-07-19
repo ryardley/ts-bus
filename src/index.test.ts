@@ -150,6 +150,52 @@ describe("namespaced events", () => {
     ]);
   });
 });
+describe("filtering by predicate", () => {
+  it("should filter event subscription using a predicate function", () => {
+    // mock subscription
+    const handleAllSubscriptions = jest.fn();
+    const handleThingsSubscriptions = jest.fn();
+
+    type ThingsSave = {
+      type: "things.save";
+      payload: string;
+    };
+    const createSaveEvent = defineEvent<ThingsSave>("things.save");
+
+    type ThingsEdit = {
+      type: "things.edit";
+      payload: string;
+    };
+    const createEditEvent = defineEvent<ThingsEdit>("things.edit");
+
+    type Frogs = {
+      type: "frogs";
+      payload: string;
+    };
+    const createFrogs = defineEvent<Frogs>("frogs");
+
+    const bus = new EventBus();
+    bus.subscribe(() => true, handleAllSubscriptions);
+    bus.subscribe(
+      ({ type }) => /^things\./.test(type),
+      handleThingsSubscriptions
+    );
+
+    bus.publish(createEditEvent("Foo"));
+    bus.publish(createSaveEvent("Bar"));
+    bus.publish(createFrogs("Gribbit"));
+
+    expect(handleAllSubscriptions.mock.calls).toEqual([
+      [{ payload: "Foo", type: "things.edit" }],
+      [{ payload: "Bar", type: "things.save" }],
+      [{ payload: "Gribbit", type: "frogs" }]
+    ]);
+    expect(handleThingsSubscriptions.mock.calls).toEqual([
+      [{ payload: "Foo", type: "things.edit" }],
+      [{ payload: "Bar", type: "things.save" }]
+    ]);
+  });
+});
 
 describe("unsubsubscribe from events", () => {
   it("should handle unsubscribing", () => {
