@@ -12,7 +12,6 @@ ts-bus
 [![codecov](https://codecov.io/gh/ryardley/ts-bus/branch/master/graph/badge.svg)](https://codecov.io/gh/ryardley/ts-bus)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ryardley/ts-bus/blob/master/LICENSE)
 
-
 ### Example
 
 ```ts
@@ -152,6 +151,13 @@ bus.subscribe("task.created", event => {
   const { listId, id, value } = event.payload;
   appendTaskToList(listId, { id, value });
 });
+
+// Alternatively you can use a predicate function
+const taskCreated = event => event.type === "task.created";
+bus.subscribe(taskCreated, event => {
+  const { listId, id, value } = event.payload;
+  appendTaskToList(listId, { id, value });
+});
 ```
 
 #### Publishing events
@@ -196,8 +202,10 @@ socket.on("event-sync", (event: BusEvent<any>) => {
 });
 
 // Prevent sending a event-sync if the event was remote
-bus.subscribe("shared.*", event => {
-  if (event.meta && event.meta.remote) return;
+const isSharedAndLocalEvent = event =>
+  /^shared\./.test(event.type) && !(event.meta && event.meta.remote);
+
+bus.subscribe(isSharedAndLocalEvent, event => {
   socket.emit("event-sync", event);
 });
 ```
@@ -270,14 +278,14 @@ This connects state changes to bus events via a state reducer function.
 ```tsx
 import { useBus, useBusReducer } from "ts-bus/react";
 
-const initialState = {count: 0};
+const initialState = { count: 0 };
 
 function reducer(state, event) {
   switch (event.type) {
-    case 'counter.increment':
-      return {count: state.count + 1};
-    case 'counter.decrement':
-      return {count: state.count - 1};
+    case "counter.increment":
+      return { count: state.count + 1 };
+    case "counter.decrement":
+      return { count: state.count - 1 };
     default:
       throw new Error();
   }
@@ -289,10 +297,13 @@ function Counter() {
   return (
     <>
       Count: {state.count}
-      <button onClick={() => bus.publish({type: 'counter.increment'})}>+</button>
-      <button onClick={() => bus.publish({type: 'counter.decrement'})}>-</button>
+      <button onClick={() => bus.publish({ type: "counter.increment" })}>
+        +
+      </button>
+      <button onClick={() => bus.publish({ type: "counter.decrement" })}>
+        -
+      </button>
     </>
   );
 }
 ```
-
