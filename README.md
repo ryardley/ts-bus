@@ -196,14 +196,22 @@ bus.publish({
 Lets say you have received a remote event from a websocket and you need to prevent it from being automatically redispatched you can provide custom metadata with each publication of an event to prevent re-emmission of events over the socket.
 
 ```ts
+import p from 'pdsl';
+
 // get an event from a socket
 socket.on("event-sync", (event: BusEvent<any>) => {
   bus.publish(event, { remote: true });
 });
 
 // Prevent sending a event-sync if the event was remote
-const isSharedAndLocalEvent = event =>
-  /^shared\./.test(event.type) && !(event.meta && event.meta.remote);
+const isSharedAndLocalEvent = p`{
+  type:${/^shared\./}, 
+  {
+    meta: {
+      remote: !${true}
+    }
+  }
+}`;
 
 bus.subscribe(isSharedAndLocalEvent, event => {
   socket.emit("event-sync", event);
