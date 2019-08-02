@@ -2,7 +2,7 @@ import produce from "immer";
 
 import { Task, List } from "./types";
 
-import { defineEvent } from "ts-bus";
+import { defineEvent } from "../../../../../dist";
 
 export const taskMoved = defineEvent<{
   type: "shared.task.moved";

@@ -4,8 +4,8 @@ import Layout from "./layout/app";
 import Routes from "./routes/app";
 import EventSync from "./event-sync/app";
 
-import { EventBus } from "ts-bus";
-import { BusProvider } from "ts-bus/react";
+import { EventBus } from "../../../../dist";
+import { BusProvider } from "../../../../dist/react";
 
 // global bus
 const bus = new EventBus();
