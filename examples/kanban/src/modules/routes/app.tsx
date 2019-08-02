@@ -14,7 +14,7 @@ const ManageRoutes = withRouter<any>(
     const { subscribe } = useBus();
 
     useEffect(() => {
-      return subscribe(navigationRequested, event => {
+      subscribe(navigationRequested, event => {
         history.push(createHref(event.payload.to));
       });
     }, [subscribe, history]);
