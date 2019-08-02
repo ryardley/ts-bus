@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Board from "../lib/Board";
 import { BoardContext } from "../app";
-import { useBus } from "ts-bus/react";
+import { useBus } from "../../../../../../dist/react";
 import { navigationRequested } from "../../routes/events";
 import CardEditorModal from "../lib/CardEditorModal";
 import { WithId, Task } from "../types";

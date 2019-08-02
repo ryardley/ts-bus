@@ -1,5 +1,5 @@
 import React, { useCallback, SyntheticEvent } from "react";
-import { useBus } from "ts-bus/react";
+import { useBus } from "../../../../../dist/react";
 import { navigationRequested } from "./events";
 import { createHref } from "./createHref";
 

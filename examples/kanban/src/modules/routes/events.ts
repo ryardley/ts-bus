@@ -1,4 +1,4 @@
-import { defineEvent } from "ts-bus";
+import { defineEvent } from "../../../../../dist";
 
 export const navigationRequested = defineEvent<{
   type: "navigation.request";

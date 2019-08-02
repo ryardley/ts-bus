@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, withRouter } from "react-router-dom";
 import { History } from "history";
 import routes from "../routes";
-import { useBus } from "ts-bus/react";
+import { useBus } from "../../../../../dist/react";
 import { navigationRequested } from "./events";
 import { createHref } from "./createHref";
 

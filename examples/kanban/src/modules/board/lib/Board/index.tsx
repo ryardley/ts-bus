@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 
 import { DropResult } from "react-beautiful-dnd";
 
-import { useBus } from "ts-bus/react";
+import { useBus } from "../../../../../../../dist/react";
 import {
   taskMoved,
   taskCreated,

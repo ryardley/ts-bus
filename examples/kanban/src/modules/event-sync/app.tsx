@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 
 import socketIOClient from "socket.io-client";
-import { EventBus } from "ts-bus";
-import { useBus } from "ts-bus/react";
-import { BusEvent } from "ts-bus/types";
+import { EventBus } from "../../../../../dist";
+import { useBus } from "../../../../../dist/react";
+import { BusEvent } from "../../../../../dist/types";
 
 function setupSocket(bus: EventBus) {
   const socket = socketIOClient("localhost:4000");
