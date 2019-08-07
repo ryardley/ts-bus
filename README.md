@@ -156,7 +156,7 @@ As you can see above you can subscribe to events by using the `subscribe` method
 const unsubscriber = bus.subscribe(<string|eventCreator|predicate>, handler);
 ```
 
-This subscription function can accept a few different options:
+This subscription function can accept a few different options for the first argument:
 
 * A `string` that is the specific event type or a wildcard selector eg. `mything.**`. 
 * An `eventCreator` function returned from `createEventDefinition<PayloadType>()("myEvent")`
