@@ -79,6 +79,14 @@ describe("Basic usage", () => {
         `{"ding":"baz"} does not match expected payload.`
       );
     });
+
+    it("should allow string coercion to return the eventType", () => {
+      const myEventCreator = createEventDefinition<{
+        foo: string;
+      }>()("myevent");
+
+      expect(String(myEventCreator)).toEqual("myevent");
+    });
   });
 
   it("should respond to events being dispatched", () => {
