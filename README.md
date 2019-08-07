@@ -106,7 +106,7 @@ export const taskLabelUpdated = createEventDefinition<{
 
 Notice we need to call the curried function to create the event creator this is because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9).
 
-##### TIP: Runtime payload checking
+#### Runtime payload checking
 
 You can also provide a function to do runtime payload type checking. This might be useful if you are working in JavaScript:
 
