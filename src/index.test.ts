@@ -51,6 +51,20 @@ describe("Basic usage", () => {
     );
   });
 
+  it("should allow runtime type warnings", () => {
+    mockWarn.mockReset();
+    const testFn = (o: any) => o.foo && typeof o.foo === "string";
+    const myEventCreator = createEventDefinition<{
+      foo: string;
+    }>({ test: testFn })("myevent");
+
+    // @ts-ignore
+    myEventCreator({ ding: "baz" });
+    expect(mockWarn.mock.calls[0][0]).toEqual(
+      `{"ding":"baz"} does not match expected payload.`
+    );
+  });
+
   it("should respond to events being dispatched", () => {
     // mock subscription
     const handleSubscription = jest.fn();

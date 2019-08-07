@@ -29,18 +29,26 @@ function isPredicateFn(descriptor: any): descriptor is PredicateFn {
   return !isEventDescriptor(descriptor) && typeof descriptor === "function";
 }
 
+type TestPredicateFn<P> = (payload: P) => boolean;
+
 type EventDefinitionOptions<P> = {
   test?: (payload: P) => boolean;
 };
 
-export function createEventDefinition<P>(options?: EventDefinitionOptions<P>) {
+export function createEventDefinition<P>(
+  options?: EventDefinitionOptions<P> | TestPredicateFn<P>
+) {
   return <T extends string>(type: T) => {
     const eventCreator = (payload: P) => {
       // Allow runtime payload checking for plain JavaScript usage
-      if (options && options.test && !options.test(payload)) {
-        showWarning(
-          `${JSON.stringify(payload)} does not match expected payload.`
-        );
+
+      if (options) {
+        const testFn = typeof options === "function" ? options : options.test;
+        if (testFn && !testFn(payload)) {
+          showWarning(
+            `${JSON.stringify(payload)} does not match expected payload.`
+          );
+        }
       }
 
       return {
