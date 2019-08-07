@@ -222,6 +222,38 @@ bus.subscribe(predicateFn, event => {
 });
 ```
 
+### Switching on Events and Discriminated Unions
+
+```ts
+
+// This function creates foo events
+const fooCreator = createEventDefinition<{
+  foo:string
+}>("foo");
+
+// This function creates bar events 
+const barCreator = createEventDefinition<{
+  bar:string
+}>("bar");
+
+// Create a union type to represent your app events
+type AppEvent = ReturnType<typeof fooCreator> | ReturnType<typeof barCreator>;
+
+bus.subscribe("shared.**", (event:AppEvent) => {
+  switch(event.type){
+    case String(fooCreator): 
+      // compiler is happy about payload having a foo property
+      alert(event.payload.foo.toLowerCase());
+      break;
+    case String(barCreator):
+      // compiler is happy about payload having a bar property
+      alert(event.payload.bar.toLowerCase());
+      break;
+    default:
+  } 
+});
+```
+
 ### Wildcard syntax
 
 You can namespace your events using period delimeters. For example:
