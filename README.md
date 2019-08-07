@@ -74,7 +74,7 @@ To explore an example of ts-bs used in context pease see the [KanBan example](ex
 
 ## Usage
 
-#### Create a bus
+### Create a bus
 
 Create your EventBus globally somewhere:
 
@@ -84,7 +84,7 @@ import { EventBus } from "ts-bus";
 export const bus = new EventBus();
 ```
 
-#### Declare events
+### Declare events
 
 Next create some Events:
 
@@ -106,7 +106,7 @@ export const taskLabelUpdated = createEventDefinition<{
 
 Notice we need to call the curried function to create the event creator this is because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9).
 
-#### Runtime payload checking
+### Runtime payload checking
 
 You can also provide a function to do runtime payload type checking. This might be useful if you are working in JavaScript:
 
@@ -118,7 +118,7 @@ export const taskLabelUpdated = createEventDefinition(p`{
 }`)("task.label.updated");
 ```
 
-#### Subscription
+### Subscription
 
 Let's subscribe to our events
 
@@ -150,7 +150,7 @@ bus.subscribe(taskCreated, event => {
 });
 ```
 
-#### Publishing events
+### Publishing events
 
 Now let's publish our events somewhere
 
@@ -218,7 +218,7 @@ This is inherited directly from EventEmitter2 which ts-bus currently uses under 
 
 Included with `ts-bus` are some React hooks and helpers that provide a bus context as well as facilitate state management within React.
 
-#### BusProvider
+### BusProvider
 
 Wrap your app using the `BusProvider`
 
@@ -240,7 +240,7 @@ export default () => (
 );
 ```
 
-#### useBus
+### useBus
 
 Access the bus instance with `useBus`
 
@@ -262,7 +262,7 @@ function ProcessButton(props) {
 }
 ```
 
-#### useBusReducer
+### useBusReducer
 
 This connects state changes to bus events via a state reducer function.
 
