@@ -1,4 +1,5 @@
 import { EventBus, defineEvent, createEventDefinition } from "./index";
+import { createEmptyEventDefinition } from "./EventBus";
 
 const mockWarn = jest.fn();
 console.warn = mockWarn;
@@ -37,31 +38,6 @@ describe("Basic usage", () => {
       bus.publish(event);
 
       expect(handleSubscription.mock.calls.length).toBe(4);
-    });
-
-    it("should work without payload type declaration", () => {
-      // mock subscription
-      const handleSubscription = jest.fn();
-
-      const myEventCreator = createEventDefinition()("myevent");
-
-      // create a bus
-      const bus = new EventBus();
-      bus.subscribe(myEventCreator, handleSubscription);
-
-      // create n event
-      const event = myEventCreator();
-
-      // Call it once
-      bus.publish(event);
-      expect(handleSubscription.mock.calls).toEqual([
-        [
-          {
-            type: "myevent",
-            payload: undefined
-          }
-        ]
-      ]);
     });
 
     it("should show deprecation warning when using defineEvent", () => {
@@ -113,6 +89,45 @@ describe("Basic usage", () => {
       expect(String(myEventCreator)).toEqual("myevent");
     });
   });
+
+
+
+//////////////////////////////
+describe("createEmptyEventDefinition", () => {
+  it("should work with createEmptyEventDefinition", () => {
+    // mock subscription
+    const handleSubscription = jest.fn();
+
+    const myEventCreator = createEmptyEventDefinition()("myevent");
+
+    // create a bus
+    const bus = new EventBus();
+    bus.subscribe(myEventCreator, handleSubscription);
+
+    // create n event
+    const event = myEventCreator();
+
+    // Call it once
+    bus.publish(event);
+    expect(handleSubscription.mock.calls).toEqual([
+      [
+        {
+          type: "myevent",
+          payload: undefined
+        }
+      ]
+    ]);
+
+    // call a few times
+    bus.publish(event);
+    bus.publish(event);
+    bus.publish(event);
+
+    expect(handleSubscription.mock.calls.length).toBe(4);
+  });
+
+});
+///////////////////////////////
 
   it("should respond to events being dispatched", () => {
     // mock subscription
