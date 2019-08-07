@@ -1,6 +1,56 @@
-import { EventBus, defineEvent } from "./index";
+import { EventBus, defineEvent, createEventDefinition } from "./index";
+
+const mockWarn = jest.fn();
+console.warn = mockWarn;
 
 describe("Basic usage", () => {
+  it("should work with createEventDefinition", () => {
+    // mock subscription
+    const handleSubscription = jest.fn();
+
+    const myEventCreator = createEventDefinition<{
+      foo: string;
+    }>()("myevent");
+
+    // create a bus
+    const bus = new EventBus();
+    bus.subscribe(myEventCreator, handleSubscription);
+
+    // create n event
+    const event = myEventCreator({ foo: "Hello" });
+
+    // Call it once
+    bus.publish(event);
+    expect(handleSubscription.mock.calls).toEqual([
+      [
+        {
+          type: "myevent",
+          payload: { foo: "Hello" }
+        }
+      ]
+    ]);
+
+    // call a few times
+    bus.publish(event);
+    bus.publish(event);
+    bus.publish(event);
+
+    expect(handleSubscription.mock.calls.length).toBe(4);
+  });
+
+  it("should show deprecation warning when using defineEvent", () => {
+    mockWarn.mockReset();
+
+    defineEvent<{
+      type: "myevent";
+      payload: { foo: string };
+    }>("myevent");
+
+    expect(mockWarn.mock.calls[0][0]).toEqual(
+      "defineEvent is deprecated and will be removed in the future. Please use createEventDefinition instead."
+    );
+  });
+
   it("should respond to events being dispatched", () => {
     // mock subscription
     const handleSubscription = jest.fn();

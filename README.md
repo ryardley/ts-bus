@@ -15,15 +15,10 @@ ts-bus
 ### Example
 
 ```ts
-import { EventBus, defineEvent } from "ts-bus";
+import { EventBus, createEventDefinition } from "ts-bus";
 
 // Define Event
-type SomeEvent = {
-  type: "SOME_EVENT";
-  payload: { url: string };
-};
-
-export const someEvent = defineEvent<SomeEvent>("SOME_EVENT");
+export const someEvent = createEventDefinition<{ url: string }>()("SOME_EVENT");
 
 // Create bus
 const bus = new EventBus();
@@ -95,37 +90,32 @@ Next create some Events:
 
 ```ts
 // events.ts
-import { defineEvent } from "ts-bus";
+import { createEventDefinition } from "ts-bus";
 
-type TaskCreatedEvent = {
-  type: "task.created";
-  payload: {
-    id: string;
-    listId: string;
-    value: string;
-  };
-};
+export const taskCreated = createEventDefinition<{
+  id: string;
+  listId: string;
+  value: string;
+}>()("task.created");
 
-export const taskCreated = defineEvent<TaskCreatedEvent>("task.created");
-// Note we have to pass in a string as typescript does
-// not allow for a way to create a string from typeland
-// This is typed however so you should have
-// autocompletion and should not find yourself making errors
+export const taskLabelUpdated = createEventDefinition<{
+  id: string;
+  label: string;
+}>()("task.label.updated");
 ```
 
-_TIP_
+Notice we need to call the curried function to create the event creator this is because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9).
 
-> I find putting the event type inline within the definition leads to more concise event definition code
+##### TIP: Runtime payload checking
 
-```ts
-// Inline example
-export const taskLabelUpdated = defineEvent<{
-  type: "task.label.updated";
-  payload: {
-    id: string;
-    label: string;
-  };
-}>("task.label.updated");
+You can also provide a function to do runtime payload type checking. This might be useful if you are working in JavaScript:
+
+```js
+import p from "pdsl";
+export const taskLabelUpdated = createEventDefinition(p`{
+  id: String,
+  label: String,
+}`)("task.label.updated");
 ```
 
 #### Subscription
@@ -196,7 +186,7 @@ bus.publish({
 Lets say you have received a remote event from a websocket and you need to prevent it from being automatically redispatched you can provide custom metadata with each publication of an event to prevent re-emmission of events over the socket.
 
 ```ts
-import p from 'pdsl';
+import p from "pdsl";
 
 // get an event from a socket
 socket.on("event-sync", (event: BusEvent<any>) => {
