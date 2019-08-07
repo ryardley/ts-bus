@@ -204,9 +204,12 @@ socket.on("event-sync", (event: BusEvent<any>) => {
 });
 
 // Prevent sending a event-sync if the event was remote
-const isSharedAndLocalEvent = p`{ type:${/^shared\./}, meta: { remote: !true } }`;
-
-bus.subscribe(isSharedAndLocalEvent, event => {
+bus.subscribe(p`{ 
+  type:${/^shared\./}, 
+  meta: { 
+    remote: !true 
+  } 
+}`, event => {
   socket.emit("event-sync", event);
 });
 ```
