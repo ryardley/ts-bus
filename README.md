@@ -118,9 +118,23 @@ export const taskLabelUpdated = createEventDefinition(p`{
 }`)("task.label.updated");
 ```
 
-### Subscription
+### Subscribing and unsubscribing to events
 
-Let's subscribe to our events
+You can subscribe to events by using the `subscribe` method of the bus. 
+
+```ts
+const unsubscriber = bus.subscribe(<string|eventCreator|predicate>, handler);
+```
+
+This subscription function can accept a few different options:
+
+* A `string` that is the specific event type or a wildcard selector eg. `mything.**`. 
+* An `eventCreator` function returned from `createEventDefinition<PayloadType>()("myEvent")`
+* A `predicate` function that will only subscribe to events that match the predicate. Note the predicate function matches the entire `event` object not just the payload. Eg. `{type:'foo', payload:'foo'}`
+
+#### Examples of subscribing to events
+
+Let's subscribe to some events
 
 ```ts
 // main.ts
