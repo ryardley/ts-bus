@@ -203,13 +203,17 @@ socket.on("event-sync", (event: BusEvent<any>) => {
   bus.publish(event, { remote: true });
 });
 
-// Prevent sending a event-sync if the event was remote
-bus.subscribe(p`{ 
+// This is a shorthand utility that creates predicate functions based on a given object shape. 
+// For more details see https://github.com/ryardley/pdsl
+const predicateFn = p`{ 
   type:${/^shared\./}, 
   meta: { 
     remote: !true 
   } 
-}`, event => {
+}`;
+
+// Prevent sending a event-sync if the event was remote
+bus.subscribe(predicateFn, event => {
   socket.emit("event-sync", event);
 });
 ```
