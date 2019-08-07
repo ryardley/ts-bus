@@ -2,6 +2,12 @@
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
 import { BusEvent } from "./types";
 
+function showWarning(msg: string) {
+  if (process && process.env && process.env.NODE_ENV !== "production") {
+    console.warn(msg);
+  }
+}
+
 type EventTypeDescriptor<T extends { type: string }> = {
   eventType: T["type"];
 };
@@ -23,11 +29,49 @@ function isPredicateFn(descriptor: any): descriptor is PredicateFn {
   return !isEventDescriptor(descriptor) && typeof descriptor === "function";
 }
 
+type TestPredicateFn<P> = (payload: P) => boolean;
+
+type EventDefinitionOptions<P> = {
+  test?: (payload: P) => boolean;
+};
+
+export function createEventDefinition<P>(
+  options?: EventDefinitionOptions<P> | TestPredicateFn<P>
+) {
+  return <T extends string>(type: T) => {
+    const eventCreator = (payload: P) => {
+      // Allow runtime payload checking for plain JavaScript usage
+
+      if (options) {
+        const testFn = typeof options === "function" ? options : options.test;
+        if (testFn && !testFn(payload)) {
+          showWarning(
+            `${JSON.stringify(payload)} does not match expected payload.`
+          );
+        }
+      }
+
+      return {
+        type,
+        payload
+      };
+    };
+    eventCreator.eventType = type;
+    eventCreator.toString = () => type; // allow String coercion to deliver the eventType
+    return eventCreator;
+  };
+}
+
 export function defineEvent<T extends BusEvent>(type: T["type"]) {
+  showWarning(
+    "defineEvent is deprecated and will be removed in the future. Please use createEventDefinition instead."
+  );
+
   const eventCreator = (payload: T["payload"]) => ({
     type,
     payload
   });
+
   eventCreator.eventType = type;
   return eventCreator as EventCreatorFn<T>;
 }

@@ -15,15 +15,10 @@ ts-bus
 ### Example
 
 ```ts
-import { EventBus, defineEvent } from "ts-bus";
+import { EventBus, createEventDefinition } from "ts-bus";
 
 // Define Event
-type SomeEvent = {
-  type: "SOME_EVENT";
-  payload: { url: string };
-};
-
-export const someEvent = defineEvent<SomeEvent>("SOME_EVENT");
+export const someEvent = createEventDefinition<{ url: string }>()("SOME_EVENT");
 
 // Create bus
 const bus = new EventBus();
@@ -79,7 +74,7 @@ To explore an example of ts-bs used in context pease see the [KanBan example](ex
 
 ## Usage
 
-#### Create a bus
+### Create a bus
 
 Create your EventBus globally somewhere:
 
@@ -89,46 +84,41 @@ import { EventBus } from "ts-bus";
 export const bus = new EventBus();
 ```
 
-#### Declare events
+### Declare events
 
 Next create some Events:
 
 ```ts
 // events.ts
-import { defineEvent } from "ts-bus";
+import { createEventDefinition } from "ts-bus";
 
-type TaskCreatedEvent = {
-  type: "task.created";
-  payload: {
-    id: string;
-    listId: string;
-    value: string;
-  };
-};
+export const taskCreated = createEventDefinition<{
+  id: string;
+  listId: string;
+  value: string;
+}>()("task.created");
 
-export const taskCreated = defineEvent<TaskCreatedEvent>("task.created");
-// Note we have to pass in a string as typescript does
-// not allow for a way to create a string from typeland
-// This is typed however so you should have
-// autocompletion and should not find yourself making errors
+export const taskLabelUpdated = createEventDefinition<{
+  id: string;
+  label: string;
+}>()("task.label.updated");
 ```
 
-_TIP_
+Notice we need to call the curried function to create the event creator this is because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9).
 
-> I find putting the event type inline within the definition leads to more concise event definition code
+### Runtime payload checking
 
-```ts
-// Inline example
-export const taskLabelUpdated = defineEvent<{
-  type: "task.label.updated";
-  payload: {
-    id: string;
-    label: string;
-  };
-}>("task.label.updated");
+You can also provide a function to do runtime payload type checking. This might be useful if you are working in JavaScript:
+
+```js
+import p from "pdsl";
+export const taskLabelUpdated = createEventDefinition(p`{
+  id: String,
+  label: String,
+}`)("task.label.updated");
 ```
 
-#### Subscription
+### Subscription
 
 Let's subscribe to our events
 
@@ -160,7 +150,7 @@ bus.subscribe(taskCreated, event => {
 });
 ```
 
-#### Publishing events
+### Publishing events
 
 Now let's publish our events somewhere
 
@@ -196,7 +186,7 @@ bus.publish({
 Lets say you have received a remote event from a websocket and you need to prevent it from being automatically redispatched you can provide custom metadata with each publication of an event to prevent re-emmission of events over the socket.
 
 ```ts
-import p from 'pdsl';
+import p from "pdsl";
 
 // get an event from a socket
 socket.on("event-sync", (event: BusEvent<any>) => {
@@ -235,7 +225,7 @@ This is inherited directly from EventEmitter2 which ts-bus currently uses under 
 
 Included with `ts-bus` are some React hooks and helpers that provide a bus context as well as facilitate state management within React.
 
-#### BusProvider
+### BusProvider
 
 Wrap your app using the `BusProvider`
 
@@ -257,7 +247,7 @@ export default () => (
 );
 ```
 
-#### useBus
+### useBus
 
 Access the bus instance with `useBus`
 
@@ -279,7 +269,7 @@ function ProcessButton(props) {
 }
 ```
 
-#### useBusReducer
+### useBusReducer
 
 This connects state changes to bus events via a state reducer function.
 

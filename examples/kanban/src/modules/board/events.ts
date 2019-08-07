@@ -2,57 +2,40 @@ import produce from "immer";
 
 import { Task, List } from "./types";
 
-import { defineEvent } from "../../../../../dist";
+import { createEventDefinition } from "../../../../../dist";
 
-export const taskMoved = defineEvent<{
-  type: "shared.task.moved";
-  payload: {
-    source: { id: string; index: number };
-    destination: { id: string; index: number };
-  };
-}>("shared.task.moved");
+export const taskMoved = createEventDefinition<{
+  source: { id: string; index: number };
+  destination: { id: string; index: number };
+}>()("shared.task.moved");
 
-export const taskCreated = defineEvent<{
-  type: "shared.task.created";
-  payload: {
-    id: string;
-    listId: string;
-    value: string;
-  };
-}>("shared.task.created");
+export const taskCreated = createEventDefinition<{
+  id: string;
+  listId: string;
+  value: string;
+}>()("shared.task.created");
 
-export const taskUpdated = defineEvent<{
-  type: "shared.task.updated";
-  payload: {
-    id: string;
-    task: { label: string };
-  };
-}>("shared.task.updated");
+export const taskUpdated = createEventDefinition<{
+  id: string;
+  task: { label: string };
+}>()("shared.task.updated");
 
-export const taskDeleted = defineEvent<{
-  type: "shared.task.deleted";
-  payload: {
-    id: string;
-  };
-}>("shared.task.deleted");
+export const taskDeleted = createEventDefinition<{
+  id: string;
+}>()("shared.task.deleted");
 
-export const listCreated = defineEvent<{
-  type: "shared.list.created";
-  payload: { id: string };
-}>("shared.list.created");
+export const listCreated = createEventDefinition<{ id: string }>()(
+  "shared.list.created"
+);
 
-export const listTitleChanged = defineEvent<{
-  type: "shared.list.title.changed";
-  payload: {
-    id: string;
-    title: string;
-  };
-}>("shared.list.title.changed");
+export const listTitleChanged = createEventDefinition<{
+  id: string;
+  title: string;
+}>()("shared.list.title.changed");
 
-export const listDeleted = defineEvent<{
-  type: "shared.list.deleted";
-  payload: { id: string };
-}>("shared.list.deleted");
+export const listDeleted = createEventDefinition<{ id: string }>()(
+  "shared.list.deleted"
+);
 
 export type BoardEvent =
   | ReturnType<typeof taskMoved>
