@@ -259,12 +259,12 @@ bus.subscribe(predicateFn, event => {
 // This function creates foo events
 const fooCreator = createEventDefinition<{
   foo:string
-}>("shared.foo");
+}>()("shared.foo");
 
 // This function creates bar events 
 const barCreator = createEventDefinition<{
   bar:string
-}>("shared.bar");
+}>()("shared.bar");
 
 // Create a union type to represent your app events
 type AppEvent = ReturnType<typeof fooCreator> | ReturnType<typeof barCreator>;
