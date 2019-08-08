@@ -8,6 +8,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
+    "jsx": "react",
     "moduleResolution": "node",
     "isolatedModules": false,
     "declaration": true,
