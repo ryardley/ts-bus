@@ -168,7 +168,7 @@ You can also subscribe using a predicate function to filter events.
 ```ts
 // A predicate
 function isSpecialEvent(event) {
-  return event.payload && event.payload.key === "special";
+  return event.payload && event.payload.special;
 }
 
 bus.subscribe(isSpecialEvent, event => {
