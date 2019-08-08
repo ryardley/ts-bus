@@ -127,9 +127,10 @@ Let's subscribe to some events
 import { taskLabelUpdated, taskCreated } from "./event";
 import { bus } from "./bus";
 
-// You can subscribe using the event factory function should you wish
+// You can subscribe using the event factory function
 const unsubscribe = bus.subscribe(taskLabelUpdated, event => {
-  const { id, label } = event.payload; // Event typing should be available
+  // Event type should be available
+  const { id, label } = event.payload;
   doSomethingWithLabelAndId({ id, label });
 });
 
@@ -142,9 +143,12 @@ bus.subscribe("task.created", event => {
   appendTaskToList(listId, { id, value });
 });
 
-// Alternatively you can use a predicate function
-const taskCreated = event => event.type === "task.created";
-bus.subscribe(taskCreated, event => {
+// Alternatively you can pass in a predicate function
+function isTaskCreated(event:{type:string}) {
+  return event.type === "task.created";
+}
+
+bus.subscribe(isTaskCreated, event => {
   const { listId, id, value } = event.payload;
   appendTaskToList(listId, { id, value });
 });
