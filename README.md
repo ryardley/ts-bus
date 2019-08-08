@@ -167,11 +167,11 @@ You can also subscribe using a predicate function to filter events.
 
 ```ts
 // A predicate
-function isTaskCreated(event:{type:string}) {
-  return event.type === "task.created";
+function isSpecialEvent(event) {
+  return event.payload && event.payload.key === "special";
 }
 
-bus.subscribe(isTaskCreated, event => {
+bus.subscribe(isSpecialEvent, event => {
   // ...
 });
 ```
