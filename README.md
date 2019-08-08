@@ -295,7 +295,7 @@ You can namespace your events using period delimeters. For example:
 "*" matches everything within a single namespace eg. "foo" but not "foo.bar"
 ```
 
-This is inherited directly from EventEmitter2 which ts-bus currently uses under the hood. I would like to investigate a stronger pattern matching syntax in the future that can take account of payload and event metadata. Submit an issue if you have ideas for syntax etc.
+This is inherited directly from EventEmitter2 which ts-bus currently uses under the hood.
 
 ## React extensions
 
