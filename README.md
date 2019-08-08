@@ -104,7 +104,7 @@ export const taskLabelUpdated = createEventDefinition<{
 }>()("task.label.updated");
 ```
 
-Notice we need to call the curried function to create the event creator this is because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9).
+Notice `createEventDefinition()` will often be called with out a runtime check argument and it returns a function that accepts the event type as an argument. Whilst possibly a tiny bit awkward, this is done because it is [the only way we can allow effective discriminated unions](https://github.com/ryardley/ts-bus/issues/9). See [switching on events](#switching-on-events-and-discriminated-unions).
 
 ### Runtime payload checking
 
