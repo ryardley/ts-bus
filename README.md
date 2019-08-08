@@ -153,7 +153,7 @@ bus.subscribe("task.created", event => {
 });
 ```
 
-Or you can use wildcards
+Or you can use [wildcards](#wildcard-syntax): 
 
 ```ts
 bus.subscribe("task.**", event => {
