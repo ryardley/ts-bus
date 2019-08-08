@@ -118,41 +118,67 @@ export const taskLabelUpdated = createEventDefinition(p`{
 }`)("task.label.updated");
 ```
 
-### Subscribing and unsubscribing to events
-
-Let's subscribe to some events
+### Subscribing
 
 ```ts
-// main.ts
 import { taskLabelUpdated, taskCreated } from "./event";
 import { bus } from "./bus";
 
-// You can subscribe using the event factory function
-const unsubscribe = bus.subscribe(taskLabelUpdated, event => {
-  // Event type should be available
-  const { id, label } = event.payload;
+// You can subscribe using the event creator function
+bus.subscribe(taskLabelUpdated, event => {
+  const { id, label } = event.payload;  // Event is typed
   doSomethingWithLabelAndId({ id, label });
 });
+```
 
-// Unsubscribe to taskLabelUpdated after 20 seconds
-setTimeout(unsubscribe, 20 * 1000);
+### Unsubscribing
 
-// Or you can use plain old type strings
-bus.subscribe("task.created", event => {
-  const { listId, id, value } = event.payload;
-  appendTaskToList(listId, { id, value });
+To unsubscribe from an event use the returned unsubscribe function.
+
+```ts
+const unsubscribe = bus.subscribe(taskLabelUpdated, event => {
+  // ...
 });
 
-// Alternatively you can pass in a predicate function
+unsubscribe(); // removes event subscription
+```
+
+### Subscribing with a type string
+
+You can use the event type to subscribe. 
+
+```ts
+bus.subscribe("task.created", event => {
+  // ...
+});
+```
+
+Or you can use wildcards
+
+```ts
+bus.subscribe("task.**", event => {
+  // ...
+});
+```
+
+### Subscribing with a predicate function
+
+You can also subscribe using a predicate function to filter events. 
+
+```ts
+// A predicate
 function isTaskCreated(event:{type:string}) {
   return event.type === "task.created";
 }
 
 bus.subscribe(isTaskCreated, event => {
-  const { listId, id, value } = event.payload;
-  appendTaskToList(listId, { id, value });
+  // ...
 });
 ```
+
+You may find [pdsl](https://github.com/ryardley/pdsl) a good fit for creating predicates. 
+
+### Subscription syntax
 
 As you can see above you can subscribe to events by using the `subscribe` method of the bus. 
 
@@ -166,7 +192,7 @@ This subscription function can accept a few different options for the first argu
 * An `eventCreator` function returned from `createEventDefinition<PayloadType>()("myEvent")`
 * A `predicate` function that will only subscribe to events that match the predicate. Note the predicate function matches the entire `event` object not just the payload. Eg. `{type:'foo', payload:'foo'}`
 
-The unsubscribe method will unsubscribe the specific event from the bus. 
+The returned `unsubscribe()` method will unsubscribe the specific event from the bus. 
 
 ### Publishing events
 
