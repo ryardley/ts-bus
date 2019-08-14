@@ -90,9 +90,6 @@ describe("Basic usage", () => {
     });
   });
 
-
-
-//////////////////////////////
 describe("createEmptyEventDefinition", () => {
   it("should work with createEmptyEventDefinition", () => {
     // mock subscription
@@ -127,7 +124,6 @@ describe("createEmptyEventDefinition", () => {
   });
 
 });
-///////////////////////////////
 
   it("should respond to events being dispatched", () => {
     // mock subscription
