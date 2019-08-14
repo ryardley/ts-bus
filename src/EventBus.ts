@@ -35,16 +35,16 @@ type EventDefinitionOptions<P> = {
   test?: (payload: P) => boolean;
 };
 
-export function createEventDefinition<P>(
+export function createEventDefinition<P = undefined>(
   options?: EventDefinitionOptions<P> | TestPredicateFn<P>
 ) {
   return <T extends string>(type: T) => {
-    const eventCreator = (payload: P) => {
+    const eventCreator = (payload?: P) => {
       // Allow runtime payload checking for plain JavaScript usage
 
       if (options) {
         const testFn = typeof options === "function" ? options : options.test;
-        if (testFn && !testFn(payload)) {
+        if (testFn && payload !== undefined && !testFn(payload)) {
           showWarning(
             `${JSON.stringify(payload)} does not match expected payload.`
           );
