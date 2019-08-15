@@ -29,7 +29,7 @@ it("should not subscribe without unsubscribing ", () => {
   const mockBus = mockEventBus();
 
   // run once to subscribe to bus
-  const { rerender } = renderHook(
+  const hook = renderHook(
     (subscriberFn: (d: any, b: any) => void) =>
       useBusReducer({}, (state: {}) => state, subscriberFn),
     {
@@ -41,10 +41,11 @@ it("should not subscribe without unsubscribing ", () => {
   );
 
   // change subscriber to different reference to invalidate useEffect
-  rerender((...args) => _defaultSubscriber(...args));
+  hook.rerender((...args) => _defaultSubscriber(...args));
+  hook.unmount();
 
   expect(mockBus.subscribe.mock.calls.length).toBe(2);
-  expect(mockBus._unsubscribe.mock.calls.length).toBe(1);
+  expect(mockBus._unsubscribe.mock.calls.length).toBe(2);
 });
 
 it("should reduce state", () => {
