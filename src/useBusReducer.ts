@@ -5,11 +5,11 @@ import { BusEvent } from "./types";
 
 type DispatchFn<E> = (a: E) => void;
 
-function defaultSubscriber<E extends BusEvent>(
+export function _defaultSubscriber<E extends BusEvent>(
   dispatch: DispatchFn<E>,
   bus: EventBus
 ) {
-  bus.subscribe<E>("**", dispatch);
+  return bus.subscribe<E>("**", dispatch);
 }
 
 export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
@@ -18,7 +18,7 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
   subscriber: (
     dispatch: DispatchFn<E>,
     bus: EventBus
-  ) => void = defaultSubscriber
+  ) => void = _defaultSubscriber
 ) {
   // Pull the bus from context
   const bus = useBus();
