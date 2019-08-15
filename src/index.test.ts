@@ -63,13 +63,6 @@ describe("Basic usage", () => {
             }
           ]
         ]);
-
-        // call a few times
-        bus.publish(event);
-        bus.publish(event);
-        bus.publish(event);
-
-        expect(handleSubscription.mock.calls.length).toBe(4);
       });
     });
 
