@@ -35,14 +35,13 @@ type EventDefinitionOptions<P> = {
   test?: (payload: P) => boolean;
 };
 
-export function createEventDefinition<P>(
+export function createEventDefinition<P = void>(
   options?: EventDefinitionOptions<P> | TestPredicateFn<P>
 ) {
   return <T extends string>(type: T) => {
-    const eventCreator = (payload: P) => {
+    function eventCreator(payload: P) {
       // Allow runtime payload checking for plain JavaScript usage
-
-      if (options) {
+      if (options && payload) {
         const testFn = typeof options === "function" ? options : options.test;
         if (testFn && !testFn(payload)) {
           showWarning(
@@ -55,7 +54,7 @@ export function createEventDefinition<P>(
         type,
         payload
       };
-    };
+    }
     eventCreator.eventType = type;
     eventCreator.toString = () => type; // allow String coercion to deliver the eventType
     return eventCreator;

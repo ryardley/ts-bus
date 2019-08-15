@@ -39,6 +39,33 @@ describe("Basic usage", () => {
       expect(handleSubscription.mock.calls.length).toBe(4);
     });
 
+    describe("createEmptyEventDefinition", () => {
+      it("should work with createEmptyEventDefinition and an empty payload", () => {
+        // mock subscription
+        const handleSubscription = jest.fn();
+
+        const myEventCreator = createEventDefinition()("myevent");
+
+        // create a bus
+        const bus = new EventBus();
+        bus.subscribe(myEventCreator, handleSubscription);
+
+        // create n event
+        const event = myEventCreator();
+
+        // Call it once
+        bus.publish(event);
+        expect(handleSubscription.mock.calls).toEqual([
+          [
+            {
+              type: "myevent",
+              payload: undefined
+            }
+          ]
+        ]);
+      });
+    });
+
     it("should show deprecation warning when using defineEvent", () => {
       mockWarn.mockReset();
 
