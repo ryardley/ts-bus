@@ -80,13 +80,13 @@ it("should update state", () => {
     { wrapper }
   );
 
-  expect(result.current.counter).toBe(0);
+  expect(result.current[0].counter).toBe(0);
 
   act(() => {
     bus.publish({ type: incrementEvent.eventType, payload: {counter: 1} });
   });
 
-  expect(result.current.counter).toBe(1);
+  expect(result.current[0].counter).toBe(1);
 });
 
 it("should reduce state", () => {
