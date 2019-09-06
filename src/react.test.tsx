@@ -1,5 +1,5 @@
 import React from "react";
-import { create, act as rAct } from "react-test-renderer";
+import { create } from "react-test-renderer";
 
 import { renderHook, act } from "@testing-library/react-hooks";
 import { BusProvider, useBus, useBusReducer } from "./react";
