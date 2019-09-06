@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction, useLayoutEffect } from "react";
 import { useBus } from "./react";
 import { BusEvent } from "./types";
 
@@ -10,7 +10,7 @@ export function useBusState<E extends BusEvent = BusEvent>(
 
   const [state, dispatch] = useState<E["payload"]>(initState);
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     const unsubscribe = bus.subscribe<E>(event, (v: E) => { dispatch(v.payload) });
     return () => { unsubscribe() };
   }, [dispatch, bus]);
