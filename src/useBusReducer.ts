@@ -26,7 +26,7 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
   // Run the reducer
   const [state, dispatch] = useReducer(reducer, initState);
 
-  // Run the subscriber
+  // Run the subscriber synchronously
   useLayoutEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
 
   return state;

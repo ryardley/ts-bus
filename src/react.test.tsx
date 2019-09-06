@@ -137,7 +137,7 @@ it("should subscribe state", () => {
   expect(result.current.counter).toBe(1);
 });
 
-it("should not loose events during the render cycle when mounted ", done => {
+it("should not loose events during the render cycle when mounted.", done => {
   const myBus = new EventBus();
   const reducer = jest.fn(s => s);
 
