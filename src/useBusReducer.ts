@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useReducer, useLayoutEffect } from "react";
 import { useBus } from "./react";
 import { EventBus } from "./EventBus";
 import { BusEvent } from "./types";
@@ -26,8 +26,8 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
   // Run the reducer
   const [state, dispatch] = useReducer(reducer, initState);
 
-  // Run the subscriber
-  useEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
+  // Run the subscriber synchronously
+  useLayoutEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
 
   return state;
 }

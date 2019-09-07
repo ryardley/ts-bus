@@ -1,4 +1,5 @@
 import React from "react";
+import { create } from "react-test-renderer";
 
 import { renderHook, act } from "@testing-library/react-hooks";
 import { BusProvider, useBus, useBusReducer } from "./react";
@@ -134,4 +135,55 @@ it("should subscribe state", () => {
 
   // Reset should have no effect because of subscriber
   expect(result.current.counter).toBe(1);
+});
+
+it("should not loose events during the render cycle when mounted.", done => {
+  const myBus = new EventBus();
+  const reducer = jest.fn(s => s);
+
+  const EVENT_DELAY = { type: "myevent", payload: "DELAY" };
+  const EVENT_URGENT = { type: "myevent", payload: "URGENT" };
+
+  function MyContextProvider(props: { children: any }) {
+    useBusReducer({}, reducer);
+
+    return props.children;
+  }
+
+  function EventPublisher() {
+    const b = useBus();
+
+    React.useEffect(() => {
+      setTimeout(() => {
+        b.publish(EVENT_DELAY);
+      }, 0);
+    }, [b]);
+
+    React.useEffect(() => {
+      b.publish(EVENT_URGENT);
+    }, [b]);
+
+    return <div />;
+  }
+
+  function App() {
+    return (
+      <BusProvider value={myBus}>
+        <MyContextProvider>
+          <EventPublisher />
+        </MyContextProvider>
+      </BusProvider>
+    );
+  }
+
+  // render the component
+  act(() => {
+    create(<App />);
+  });
+
+  setTimeout(() => {
+    const eventList = reducer.mock.calls.map(([, ev]: any[]) => ev);
+    expect(eventList).toEqual([EVENT_URGENT, EVENT_DELAY]);
+    done();
+  }, 0);
 });
