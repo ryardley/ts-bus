@@ -50,13 +50,11 @@ it("should not subscribe without unsubscribing (useBusReducer) ", () => {
 
 it("should not subscribe without unsubscribing (useBusState)", () => {
   const mockBus = mockEventBus();
-  const incrementEvent = createEventDefinition<{counter: number}>()("increment");
+  const incrementEvent = createEventDefinition<number>()("increment");
 
   // run once to subscribe to bus
   const hook = renderHook(() =>
-    useBusState<ReturnType<typeof incrementEvent>>(
-      {counter: 0},
-      incrementEvent.eventType),
+    useBusState(incrementEvent(0)),
     {
       wrapper: ({ children }: { children?: React.ReactNode }) => (
         <BusProvider value={mockBus}>{children}</BusProvider>
@@ -71,22 +69,21 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
 });
 
 it("should update state", () => {
-  const incrementEvent = createEventDefinition<{counter: number}>()("increment");
+  const incrementEvent = createEventDefinition<number>()("increment");
   
   const { result } = renderHook(
     () =>
-      useBusState<ReturnType<typeof incrementEvent>>(
-        {counter: 0}, incrementEvent.eventType),
+      useBusState(incrementEvent(0)),
     { wrapper }
   );
 
-  expect(result.current[0].counter).toBe(0);
+  expect(result.current).toBe(0);
 
   act(() => {
-    bus.publish({ type: incrementEvent.eventType, payload: {counter: 1} });
+    bus.publish(incrementEvent(1));
   });
 
-  expect(result.current[0].counter).toBe(1);
+  expect(result.current).toBe(1);
 });
 
 it("should reduce state", () => {
