@@ -108,7 +108,7 @@ Notice `createEventDefinition()` will often be called with out a runtime check a
 
 ### Runtime payload checking
 
-You can also provide a predicate to do runtime payload type checking. This is useful as a sanity check if you are working in JavaScript:
+You can also provide a predicate to do runtime payload type checking in development. This is useful as a sanity check if you are working in JavaScript:
 
 ```js
 
@@ -124,6 +124,8 @@ export const taskLabelUpdated = createEventDefinition(isLabel)("task.label.updat
 
 taskLabelUpdated({id:"abc"}); // {"id":"abc"} does not match expected payload.
 ```
+
+These warnings are suppressed in production.
 
 ### Subscribing
 
