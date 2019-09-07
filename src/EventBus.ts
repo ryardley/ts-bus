@@ -14,7 +14,7 @@ type EventTypeDescriptor<T extends { type: string }> = {
 
 type PredicateFn = (...args: any[]) => boolean;
 
-type EventCreatorFn<T extends { type: string; payload: any }> = ((
+export type EventCreatorFn<T extends { type: string; payload: any }> = ((
   payload: T["payload"]
 ) => T) &
   EventTypeDescriptor<T>;

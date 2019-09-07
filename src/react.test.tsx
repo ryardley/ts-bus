@@ -25,7 +25,7 @@ it("should provide a bus", () => {
   expect(result.current).toBe(bus);
 });
 
-it("should not subscribe without unsubscribing (useBusReducer) ", () => {
+it("should not subscribe without unsubscribing (useBusReducer)", () => {
   const mockBus = mockEventBus();
 
   // run once to subscribe to bus
@@ -54,7 +54,7 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
 
   // run once to subscribe to bus
   const hook = renderHook(() =>
-    useBusState(incrementEvent(0)),
+    useBusState(0, incrementEvent),
     {
       wrapper: ({ children }: { children?: React.ReactNode }) => (
         <BusProvider value={mockBus}>{children}</BusProvider>
@@ -73,7 +73,7 @@ it("should update state", () => {
   
   const { result } = renderHook(
     () =>
-      useBusState(incrementEvent(0)),
+      useBusState(0, incrementEvent),
     { wrapper }
   );
 

@@ -390,19 +390,19 @@ Same as for useState, a setStateAction function is been returned in order to upd
 ```tsx
 import { useBus, useBusState } from "ts-bus/react";
 
-const someEvent = createEventDefinition<{counter: number}>()("SOME_EVENT");
+const setCountEvent = createEventDefinition<number>()("SET_COUNT");
 
 function Counter() {
   const bus = useBus();
-  const [state, setState] = useBusState<ReturnType<typeof someEvent>>({counter: 0}, "SOME_EVENT");
+  const count = useBusState(0, setCountEvent);
 
   return (
     <>
-      Count: {state.counter}
-      <button onClick={() => bus.publish(someEvent({counter: state.counter + 1}))}>
+      Count: {count}
+      <button onClick={() => bus.publish(setCountEvent(count + 1))}>
         +
       </button>
-      <button onClick={() => bus.publish(someEvent({counter: state.counter - 1}))}>
+      <button onClick={() => bus.publish(setCountEvent(count - 1))}>
         -
       </button>
     </>
