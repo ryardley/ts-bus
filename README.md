@@ -385,7 +385,6 @@ function Counter() {
 ### useBusState
 
 This connects state changes to bus events via a useState equivalent function.
-Same as for useState, a setStateAction function is been returned in order to update the state directly.
 
 ```tsx
 import { useBus, useBusState } from "ts-bus/react";
