@@ -390,3 +390,30 @@ function Counter() {
   );
 }
 ```
+
+### useBusState
+
+This connects state changes to bus events via a useState equivalent function.
+
+```tsx
+import { useBus, useBusState } from "ts-bus/react";
+
+const setCountEvent = createEventDefinition<number>()("SET_COUNT");
+
+function Counter() {
+  const bus = useBus();
+  const count = useBusState(0, setCountEvent);
+
+  return (
+    <>
+      Count: {count}
+      <button onClick={() => bus.publish(setCountEvent(count + 1))}>
+        +
+      </button>
+      <button onClick={() => bus.publish(setCountEvent(count - 1))}>
+        -
+      </button>
+    </>
+  );
+}
+```

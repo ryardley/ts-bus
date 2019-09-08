@@ -2,9 +2,9 @@ import React from "react";
 import { create } from "react-test-renderer";
 
 import { renderHook, act } from "@testing-library/react-hooks";
-import { BusProvider, useBus, useBusReducer } from "./react";
+import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
 import { _defaultSubscriber } from "./useBusReducer";
-import { EventBus } from "./EventBus";
+import { EventBus, createEventDefinition } from "./EventBus";
 import { EventEmitter2 } from "eventemitter2";
 
 const bus = new EventBus();
@@ -26,7 +26,7 @@ it("should provide a bus", () => {
   expect(result.current).toBe(bus);
 });
 
-it("should not subscribe without unsubscribing ", () => {
+it("should not subscribe without unsubscribing (useBusReducer)", () => {
   const mockBus = mockEventBus();
 
   // run once to subscribe to bus
@@ -47,6 +47,44 @@ it("should not subscribe without unsubscribing ", () => {
 
   expect(mockBus.subscribe.mock.calls.length).toBe(2);
   expect(mockBus._unsubscribe.mock.calls.length).toBe(2);
+});
+
+it("should not subscribe without unsubscribing (useBusState)", () => {
+  const mockBus = mockEventBus();
+  const incrementEvent = createEventDefinition<number>()("increment");
+
+  // run once to subscribe to bus
+  const hook = renderHook(() =>
+    useBusState(0, incrementEvent),
+    {
+      wrapper: ({ children }: { children?: React.ReactNode }) => (
+        <BusProvider value={mockBus}>{children}</BusProvider>
+      )
+    }
+  );
+
+  hook.unmount();
+
+  expect(mockBus.subscribe.mock.calls.length).toBe(1);
+  expect(mockBus._unsubscribe.mock.calls.length).toBe(1);
+});
+
+it("should update state", () => {
+  const incrementEvent = createEventDefinition<number>()("increment");
+  
+  const { result } = renderHook(
+    () =>
+      useBusState(0, incrementEvent),
+    { wrapper }
+  );
+
+  expect(result.current).toBe(0);
+
+  act(() => {
+    bus.publish(incrementEvent(1));
+  });
+
+  expect(result.current).toBe(1);
 });
 
 it("should reduce state", () => {
