@@ -3,6 +3,7 @@ import { EventEmitter2 as EventEmitter } from "eventemitter2";
 import { BusEvent } from "./types";
 
 function showWarning(msg: string) {
+  /* istanbul ignore next */
   if (process && process.env && process.env.NODE_ENV !== "production") {
     console.warn(msg);
   }

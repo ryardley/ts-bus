@@ -5,6 +5,18 @@ import { BusEvent } from "./types";
 
 type DispatchFn<E> = (a: E) => void;
 
+type SubScriberFn<E extends BusEvent> = (
+  dispatch: DispatchFn<E>,
+  bus: EventBus
+) => void;
+
+type InitFn<T> = (a: any) => T;
+type ReducerFn<S, E> = (s: S, e: E) => S;
+
+function indentity<T>(a: T) {
+  return a;
+}
+
 export function _defaultSubscriber<E extends BusEvent>(
   dispatch: DispatchFn<E>,
   bus: EventBus
@@ -12,22 +24,41 @@ export function _defaultSubscriber<E extends BusEvent>(
   return bus.subscribe<E>("**", dispatch);
 }
 
-export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
-  initState: T,
-  reducer: (s: T, a: E) => T,
-  subscriber: (
-    dispatch: DispatchFn<E>,
-    bus: EventBus
-  ) => void = _defaultSubscriber
-) {
+const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
+  subscriber: SubScriberFn<E>
+) => (
+  reducer: ReducerFn<T, E>,
+  initState: any,
+  init: InitFn<T> = indentity
+) => {
   // Pull the bus from context
   const bus = useBus();
 
   // Run the reducer
-  const [state, dispatch] = useReducer(reducer, initState);
+  const [state, dispatch] = useReducer(reducer, initState, init);
 
   // Run the subscriber synchronously
   useLayoutEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
 
   return state;
+};
+
+export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
+  reducer: ReducerFn<T, E>,
+  initState: any,
+  init: InitFn<T> = indentity
+) {
+  const useReducerFn = useReducerCreator(_defaultSubscriber);
+
+  return useReducerFn(reducer, initState, init);
 }
+
+type UseBusReducerOptions<E extends BusEvent> = {
+  subscriber: SubScriberFn<E>;
+};
+
+useBusReducer.configure = <E extends BusEvent = BusEvent>(
+  options: UseBusReducerOptions<E>
+) => {
+  return useReducerCreator(options.subscriber);
+};
