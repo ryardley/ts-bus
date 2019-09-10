@@ -1,6 +1,6 @@
 // Using EventEmitter2 in order to be able to use wildcards to subscribe to all events
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
-import { BusEvent } from "./types";
+import { BusEvent, EventTypeDescriptor, EventCreatorFn } from "./types";
 
 function showWarning(msg: string) {
   /* istanbul ignore next */
@@ -9,16 +9,7 @@ function showWarning(msg: string) {
   }
 }
 
-type EventTypeDescriptor<T extends { type: string }> = {
-  eventType: T["type"];
-};
-
 type PredicateFn = (...args: any[]) => boolean;
-
-export type EventCreatorFn<T extends { type: string; payload: any }> = ((
-  payload: T["payload"]
-) => T) &
-  EventTypeDescriptor<T>;
 
 function isEventDescriptor<T extends { type: string }>(
   descriptor: any

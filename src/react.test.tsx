@@ -6,7 +6,7 @@ import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
 import { _defaultSubscriber } from "./useBusReducer";
 import { EventBus, createEventDefinition } from "./EventBus";
 import { EventEmitter2 } from "eventemitter2";
-
+import { SubscribeFn } from "./types";
 const bus = new EventBus();
 
 function mockEventBus() {
@@ -29,9 +29,9 @@ it("should provide a bus", () => {
 it("should not subscribe without unsubscribing (useBusReducer)", () => {
   const mockBus = mockEventBus();
   // run once to subscribe to bus
-  type SubscribeFn = (d: any, b: any) => void;
+  // type SubscribeFn = (d: any, b: any) => void;
   const hook = renderHook(
-    (subscriberFn: SubscribeFn) => {
+    (subscriberFn: SubscribeFn<any>) => {
       const useReducer = useBusReducer.configure({ subscriber: subscriberFn });
       return useReducer((state: {}) => state, {}, (a: any) => a);
     },
@@ -129,7 +129,7 @@ it("should subscribe state", () => {
     () => {
       const useReducer = useBusReducer.configure({
         subscriber: (dispatch, bus) => {
-          bus.subscribe("count.**", dispatch);
+          return bus.subscribe("count.**", dispatch);
         }
       });
       return useReducer(

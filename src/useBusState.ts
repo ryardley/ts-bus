@@ -1,7 +1,6 @@
-import { useEffect, useState, Dispatch, SetStateAction, useLayoutEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import { useBus } from "./react";
-import { BusEvent } from "./types";
-import { EventCreatorFn } from './EventBus';
+import { EventCreatorFn, BusEvent } from "./types";
 
 export function useBusState<E extends BusEvent = BusEvent>(
   initState: E["payload"] | undefined,
@@ -12,8 +11,12 @@ export function useBusState<E extends BusEvent = BusEvent>(
   const [state, dispatch] = useState<E["payload"]>(initState);
 
   useLayoutEffect(() => {
-    const unsubscribe = bus.subscribe<E>(event, (v: E) => { dispatch(v.payload) });
-    return () => { unsubscribe() };
+    const unsubscribe = bus.subscribe<E>(event, (v: E) => {
+      dispatch(v.payload);
+    });
+    return () => {
+      unsubscribe();
+    };
   }, [dispatch, bus]);
 
   return state;

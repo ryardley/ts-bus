@@ -1,14 +1,7 @@
 import { useReducer, useLayoutEffect } from "react";
 import { useBus } from "./react";
 import { EventBus } from "./EventBus";
-import { BusEvent } from "./types";
-
-type DispatchFn<E> = (a: E) => void;
-
-type SubScriberFn<E extends BusEvent> = (
-  dispatch: DispatchFn<E>,
-  bus: EventBus
-) => void;
+import { DispatchFn, SubscribeFn, BusEvent } from "./types";
 
 type InitFn<T> = (a: any) => T;
 type ReducerFn<S, E> = (s: S, e: E) => S;
@@ -25,7 +18,7 @@ export function _defaultSubscriber<E extends BusEvent>(
 }
 
 const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
-  subscriber: SubScriberFn<E>
+  subscriber: SubscribeFn<E>
 ) => (
   reducer: ReducerFn<T, E>,
   initState: any,
@@ -54,7 +47,7 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
 }
 
 type UseBusReducerOptions<E extends BusEvent> = {
-  subscriber: SubScriberFn<E>;
+  subscriber: SubscribeFn<E>;
 };
 
 useBusReducer.configure = <E extends BusEvent = BusEvent>(
