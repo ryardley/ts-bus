@@ -111,18 +111,19 @@ Notice `createEventDefinition()` will often be called with out a runtime check a
 You can also provide a predicate to do runtime payload type checking in development. This is useful as a sanity check if you are working in JavaScript:
 
 ```js
-
-import p from "pdsl"; 
+import p from "pdsl";
 
 // pdsl creates predicate functions
 const isLabel = p`{
   id: string,
   label: string,
-}`
+}`;
 
-export const taskLabelUpdated = createEventDefinition(isLabel)("task.label.updated");
+export const taskLabelUpdated = createEventDefinition(isLabel)(
+  "task.label.updated"
+);
 
-taskLabelUpdated({id:"abc"}); // {"id":"abc"} does not match expected payload.
+taskLabelUpdated({ id: "abc" }); // {"id":"abc"} does not match expected payload.
 ```
 
 These warnings are suppressed in production.
@@ -135,7 +136,7 @@ import { bus } from "./bus";
 
 // You can subscribe using the event creator function
 bus.subscribe(taskLabelUpdated, event => {
-  const { id, label } = event.payload;  // Event is typed
+  const { id, label } = event.payload; // Event is typed
   doSomethingWithLabelAndId({ id, label });
 });
 ```
@@ -154,7 +155,7 @@ unsubscribe(); // removes event subscription
 
 ### Subscribing with a type string
 
-You can use the event type to subscribe. 
+You can use the event type to subscribe.
 
 ```ts
 bus.subscribe("task.created", event => {
@@ -162,7 +163,7 @@ bus.subscribe("task.created", event => {
 });
 ```
 
-Or you can use [wildcards](#wildcard-syntax): 
+Or you can use [wildcards](#wildcard-syntax):
 
 ```ts
 bus.subscribe("task.**", event => {
@@ -172,7 +173,7 @@ bus.subscribe("task.**", event => {
 
 ### Subscribing with a predicate function
 
-You can also subscribe using a predicate function to filter events. 
+You can also subscribe using a predicate function to filter events.
 
 ```ts
 // A predicate
@@ -185,11 +186,11 @@ bus.subscribe(isSpecialEvent, event => {
 });
 ```
 
-You may find [pdsl](https://github.com/ryardley/pdsl) a good fit for creating predicates. 
+You may find [pdsl](https://github.com/ryardley/pdsl) a good fit for creating predicates.
 
 ### Subscription syntax
 
-As you can see above you can subscribe to events by using the `subscribe` method of the bus. 
+As you can see above you can subscribe to events by using the `subscribe` method of the bus.
 
 ```ts
 const unsubscriber = bus.subscribe(<string|eventCreator|predicate>, handler);
@@ -197,11 +198,11 @@ const unsubscriber = bus.subscribe(<string|eventCreator|predicate>, handler);
 
 This subscription function can accept a few different options for the first argument:
 
-* A `string` that is the specific event type or a wildcard selector eg. `mything.**`. 
-* An `eventCreator` function returned from `createEventDefinition<PayloadType>()("myEvent")`
-* A `predicate` function that will only subscribe to events that match the predicate. Note the predicate function matches the entire `event` object not just the payload. Eg. `{type:'foo', payload:'foo'}`
+- A `string` that is the specific event type or a wildcard selector eg. `mything.**`.
+- An `eventCreator` function returned from `createEventDefinition<PayloadType>()("myEvent")`
+- A `predicate` function that will only subscribe to events that match the predicate. Note the predicate function matches the entire `event` object not just the payload. Eg. `{type:'foo', payload:'foo'}`
 
-The returned `unsubscribe()` method will unsubscribe the specific event from the bus. 
+The returned `unsubscribe()` method will unsubscribe the specific event from the bus.
 
 ### Publishing events
 
@@ -246,7 +247,7 @@ socket.on("event-sync", (event: BusEvent<any>) => {
   bus.publish(event, { remote: true });
 });
 
-// This is a shorthand utility that creates predicate functions to match based on a given object shape. 
+// This is a shorthand utility that creates predicate functions to match based on a given object shape.
 // For more details see https://github.com/ryardley/pdsl
 const isSharedAndNotRemoteFn = p`{
   type: ${/^shared\./},
@@ -264,23 +265,22 @@ bus.subscribe(isSharedAndNotRemoteFn, event => {
 ### Switching on Events and Discriminated Unions
 
 ```ts
-
 // This function creates foo events
 const fooCreator = createEventDefinition<{
-  foo:string
+  foo: string;
 }>()("shared.foo");
 
-// This function creates bar events 
+// This function creates bar events
 const barCreator = createEventDefinition<{
-  bar:string
+  bar: string;
 }>()("shared.bar");
 
 // Create a union type to represent your app events
 type AppEvent = ReturnType<typeof fooCreator> | ReturnType<typeof barCreator>;
 
-bus.subscribe("shared.**", (event:AppEvent) => {
-  switch(event.type){
-    case String(fooCreator): 
+bus.subscribe("shared.**", (event: AppEvent) => {
+  switch (event.type) {
+    case String(fooCreator):
       // compiler is happy about payload having a foo property
       alert(event.payload.foo.toLowerCase());
       break;
@@ -289,7 +289,7 @@ bus.subscribe("shared.**", (event:AppEvent) => {
       alert(event.payload.bar.toLowerCase());
       break;
     default:
-  } 
+  }
 });
 ```
 
@@ -358,6 +358,17 @@ function ProcessButton(props) {
 
 This connects state changes to bus events via a state reducer function.
 
+Its signature is similar to useReducer except that it returns the state object instead of an array:
+
+Example:
+
+```ts
+function init(initCount: number) {
+  return { count: initCount };
+}
+const state = useBusReducer(reducer, initCount, init);
+```
+
 ```tsx
 import { useBus, useBusReducer } from "ts-bus/react";
 
@@ -376,7 +387,7 @@ function reducer(state, event) {
 
 function Counter() {
   const bus = useBus();
-  const state = useBusReducer(initialState, reducer);
+  const state = useBusReducer(reducer, initialState);
   return (
     <>
       Count: {state.count}
@@ -390,6 +401,27 @@ function Counter() {
   );
 }
 ```
+
+#### useBusReducer configuration
+
+You can configure useBusReducer with a subscriber passing in an options object.
+
+```ts
+// get a new useReducer function
+const useReducer = useBusReducer.configure({
+  subscriber: (dispatch, bus) => {
+    bus.subscribe("count.**", dispatch);
+  }
+});
+
+const state = useReducer(/*...*/);
+```
+
+Available options:
+
+| Option     | Description         |
+| ---------- | ------------------- |
+| subscriber | Subscriber function |
 
 ### useBusState
 
@@ -407,12 +439,8 @@ function Counter() {
   return (
     <>
       Count: {count}
-      <button onClick={() => bus.publish(setCountEvent(count + 1))}>
-        +
-      </button>
-      <button onClick={() => bus.publish(setCountEvent(count - 1))}>
-        -
-      </button>
+      <button onClick={() => bus.publish(setCountEvent(count + 1))}>+</button>
+      <button onClick={() => bus.publish(setCountEvent(count - 1))}>-</button>
     </>
   );
 }

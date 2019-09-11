@@ -6,7 +6,7 @@ import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
 import { _defaultSubscriber } from "./useBusReducer";
 import { EventBus, createEventDefinition } from "./EventBus";
 import { EventEmitter2 } from "eventemitter2";
-
+import { SubscribeFn } from "./types";
 const bus = new EventBus();
 
 function mockEventBus() {
@@ -28,11 +28,13 @@ it("should provide a bus", () => {
 
 it("should not subscribe without unsubscribing (useBusReducer)", () => {
   const mockBus = mockEventBus();
-
   // run once to subscribe to bus
+  // type SubscribeFn = (d: any, b: any) => void;
   const hook = renderHook(
-    (subscriberFn: (d: any, b: any) => void) =>
-      useBusReducer({}, (state: {}) => state, subscriberFn),
+    (subscriberFn: SubscribeFn<any>) => {
+      const useReducer = useBusReducer.configure({ subscriber: subscriberFn });
+      return useReducer((state: {}) => state, {}, (a: any) => a);
+    },
     {
       wrapper: ({ children }: { children?: React.ReactNode }) => (
         <BusProvider value={mockBus}>{children}</BusProvider>
@@ -54,14 +56,11 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
   const incrementEvent = createEventDefinition<number>()("increment");
 
   // run once to subscribe to bus
-  const hook = renderHook(() =>
-    useBusState(0, incrementEvent),
-    {
-      wrapper: ({ children }: { children?: React.ReactNode }) => (
-        <BusProvider value={mockBus}>{children}</BusProvider>
-      )
-    }
-  );
+  const hook = renderHook(() => useBusState(0, incrementEvent), {
+    wrapper: ({ children }: { children?: React.ReactNode }) => (
+      <BusProvider value={mockBus}>{children}</BusProvider>
+    )
+  });
 
   hook.unmount();
 
@@ -71,12 +70,10 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
 
 it("should update state", () => {
   const incrementEvent = createEventDefinition<number>()("increment");
-  
-  const { result } = renderHook(
-    () =>
-      useBusState(0, incrementEvent),
-    { wrapper }
-  );
+
+  const { result } = renderHook(() => useBusState(0, incrementEvent), {
+    wrapper
+  });
 
   expect(result.current).toBe(0);
 
@@ -91,7 +88,6 @@ it("should reduce state", () => {
   const { result } = renderHook(
     () =>
       useBusReducer(
-        { counter: 0 },
         (
           state: { counter: number },
           event: { type: string; payload: number }
@@ -111,7 +107,9 @@ it("should reduce state", () => {
             }
           }
           return state;
-        }
+        },
+        { counter: 0 },
+        (a: any) => a
       ),
     { wrapper }
   );
@@ -128,9 +126,13 @@ it("should reduce state", () => {
 
 it("should subscribe state", () => {
   const { result } = renderHook(
-    () =>
-      useBusReducer(
-        { counter: 0 },
+    () => {
+      const useReducer = useBusReducer.configure({
+        subscriber: (dispatch, bus) => {
+          return bus.subscribe("count.**", dispatch);
+        }
+      });
+      return useReducer(
         (
           state: { counter: number },
           event: { type: string; payload: number }
@@ -157,10 +159,9 @@ it("should subscribe state", () => {
           }
           return state;
         },
-        (dispatch, bus) => {
-          bus.subscribe("count.**", dispatch);
-        }
-      ),
+        { counter: 0 }
+      );
+    },
     { wrapper }
   );
 
@@ -183,7 +184,7 @@ it("should not loose events during the render cycle when mounted.", done => {
   const EVENT_URGENT = { type: "myevent", payload: "URGENT" };
 
   function MyContextProvider(props: { children: any }) {
-    useBusReducer({}, reducer);
+    useBusReducer(reducer, {});
 
     return props.children;
   }

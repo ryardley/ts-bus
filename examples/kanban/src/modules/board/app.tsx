@@ -6,7 +6,7 @@ import { initState, reducer, BoardEvent } from "./events";
 export const BoardContext = React.createContext(initState);
 
 function BoardApp({ children }: { children: React.ReactNode }) {
-  const state = useBusReducer<BoardEvent>(initState, reducer);
+  const state = useBusReducer<BoardEvent>(reducer, initState);
 
   return (
     <BoardContext.Provider value={state}>{children}</BoardContext.Provider>
