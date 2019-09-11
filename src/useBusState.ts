@@ -5,7 +5,7 @@ import { EventCreatorFn, BusEvent, SubscribeWithPayloadDispatchFn } from './type
 const useStateCreator = <E extends BusEvent = BusEvent>(
   subscriber: SubscribeWithPayloadDispatchFn<E>
 ) => (
-  initState: E["payload"] | undefined
+  initState: E["payload"] | (() => E["payload"])
 ) => {
     const bus = useBus();
 
