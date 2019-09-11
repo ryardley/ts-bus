@@ -21,6 +21,11 @@ export type SubscribeFn<E extends BusEvent> = (
   bus: EventBus
 ) => UnsubscribeFn;
 
+export type SubscribeWithPayloadDispatchFn<E extends BusEvent> = (
+  dispatch: DispatchFn<E["payload"]>,
+  bus: EventBus
+) => UnsubscribeFn;
+
 export type EventCreatorFn<T extends { type: string; payload: any }> = ((
   payload: T["payload"]
 ) => T) &

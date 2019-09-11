@@ -68,6 +68,25 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
   expect(mockBus._unsubscribe.mock.calls.length).toBe(1);
 });
 
+it("should update state (options configuration)", () => {
+  const incrementEvent = createEventDefinition<number>()("counter.increment");
+
+  const { result } = renderHook(() => 
+    useBusState.configure({subscriber: (dispatch, bus) => {
+      return bus.subscribe("counter.**", (v) => dispatch(v.payload));
+    }})(0), {
+    wrapper
+  });
+
+  expect(result.current).toBe(0);
+
+  act(() => {
+    bus.publish(incrementEvent(1));
+  });
+
+  expect(result.current).toBe(1);
+});
+
 it("should update state", () => {
   const incrementEvent = createEventDefinition<number>()("increment");
 

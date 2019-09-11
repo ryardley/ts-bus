@@ -445,3 +445,22 @@ function Counter() {
   );
 }
 ```
+
+#### useBusState configuration
+
+You can configure useBusState with a subscriber passing in an options object.
+
+```ts
+// get a new useState function
+const useState = useBusState.configure({
+    subscriber: (dispatch, bus) => bus.subscribe("**", (ev) => dispatch(ev.payload))
+});
+
+const state = useState(/*...*/);
+```
+
+Available options:
+
+| Option     | Description         |
+| ---------- | ------------------- |
+| subscriber | Subscriber function |
