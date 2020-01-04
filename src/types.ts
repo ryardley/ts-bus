@@ -1,4 +1,4 @@
-import { EventBus } from "./EventBus";
+import { EventBus, PredicateFn } from './EventBus';
 
 export type BusEvent<T extends object = any> = {
   type: string;
@@ -14,7 +14,9 @@ export type EventFrom<T extends (...args: any) => BusEvent> = ReturnType<T>;
 
 export type DispatchFn<E> = (a: E) => void;
 
-type UnsubscribeFn = () => any;
+export type UnsubscribeFn = () => any;
+
+export type SubscriptionDef<E extends BusEvent = BusEvent> = E["type"] | EventTypeDescriptor<E> | PredicateFn | string[]
 
 export type SubscribeFn<E extends BusEvent> = (
   dispatch: DispatchFn<E>,

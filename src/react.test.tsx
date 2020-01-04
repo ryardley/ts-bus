@@ -1,12 +1,12 @@
+import { act, renderHook } from "@testing-library/react-hooks";
+import { EventEmitter2 } from "eventemitter2";
 import React from "react";
 import { create } from "react-test-renderer";
-
-import { renderHook, act } from "@testing-library/react-hooks";
+import { createEventDefinition, EventBus } from './EventBus';
 import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
-import { _defaultSubscriber } from "./useBusReducer";
-import { EventBus, createEventDefinition } from "./EventBus";
-import { EventEmitter2 } from "eventemitter2";
-import { SubscribeFn } from "./types";
+import { SubscribeFn } from './types';
+import { subscribeDefinition, _defaultSubscriber } from './useBusReducer';
+
 const bus = new EventBus();
 
 function mockEventBus() {
@@ -71,10 +71,10 @@ it("should not subscribe without unsubscribing (useBusState)", () => {
 it("should update state (options configuration)", () => {
   const incrementEvent = createEventDefinition<number>()("counter.increment");
 
-  const { result } = renderHook(() => 
+  const { result } = renderHook(() =>
     useBusState.configure({subscriber: (dispatch, bus) => {
-      return bus.subscribe("counter.**", (v) => dispatch(v.payload));
-    }})(0), {
+        return bus.subscribe("counter.**", (v) => dispatch(v.payload));
+      }})(0), {
     wrapper
   });
 
@@ -101,6 +101,57 @@ it("should update state", () => {
   });
 
   expect(result.current).toBe(1);
+});
+
+
+it("should subscribe to multiple events", () => {
+  const { result } = renderHook(
+    () => {
+      const reducer = useBusReducer.configure({ subscriber: subscribeDefinition(["increment", "decrement"]) })
+      return reducer(
+        (
+          state: { counter: number },
+          event: { type: string; payload: number }
+        ) => {
+          switch (event.type) {
+            case "increment": {
+              return {
+                ...state,
+                counter: state.counter + 1
+              };
+            }
+            case "decrement": {
+              return {
+                ...state,
+                counter: state.counter - 1
+              };
+            }
+            case "multiply": {
+              return {
+                ...state,
+                counter: state.counter * 100
+              };
+            }
+          }
+          return state;
+        },
+        { counter: 0 },
+        (a: any) => a
+      )
+    },
+    { wrapper }
+  );
+
+  expect(result.current.counter).toBe(0);
+
+  act(() => {
+    bus.publish({ type: "increment", payload: null });
+    bus.publish({ type: "multiply", payload: null });
+    bus.publish({ type: "increment", payload: null });
+    bus.publish({ type: "decrement", payload: null });
+  });
+
+  expect(result.current.counter).toBe(1);
 });
 
 it("should reduce state", () => {
