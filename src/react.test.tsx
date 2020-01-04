@@ -101,11 +101,10 @@ it("should update state by subscribing to multiple events", () => {
 
   expect(result.current).toBe(0);
 
-  act(() => {
-    bus.publish(positiveNumberEvent(15));
-    bus.publish(negativeNumberEvent(-5));
-  });
+  act(() => bus.publish(positiveNumberEvent(15)));
+  expect(result.current).toBe(15);
 
+  act(() => bus.publish(negativeNumberEvent(-5)));
   expect(result.current).toBe(-5);
 });
 
