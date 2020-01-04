@@ -89,7 +89,7 @@ it("should update state (options configuration)", () => {
 });
 
 
-it("XYZ", () => {
+it("should update state by subscribing to multiple events", () => {
   const positiveNumberEvent = createEventDefinition<number>()("positive");
   const negativeNumberEvent = createEventDefinition<number>()("negative");
 
