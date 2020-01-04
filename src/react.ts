@@ -1,3 +1,4 @@
-export { useBusReducer, subscribeDefinition } from "./useBusReducer";
-export { useBusState } from "./useBusState";
-export { useBus, BusProvider } from "./BusContext";
+export { BusProvider, useBus } from "./BusContext";
+export { reducerSubscribeDefinition, useBusReducer } from "./useBusReducer";
+export { stateSubscribeDefinition, useBusState } from "./useBusState";
+

@@ -17,7 +17,7 @@ export function _defaultSubscriber<E extends BusEvent>(
   return bus.subscribe<E>("**", dispatch);
 }
 
-export const subscribeDefinition = <E extends BusEvent>(definition: SubscriptionDef<E>): SubscribeFn<E> => {
+export const reducerSubscribeDefinition = <E extends BusEvent>(definition: SubscriptionDef<E>): SubscribeFn<E> => {
   return (dispatch: DispatchFn<E>, bus: EventBus): UnsubscribeFn => {
     return bus.subscribe(definition, dispatch)
   }

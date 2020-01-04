@@ -5,7 +5,8 @@ import { create } from "react-test-renderer";
 import { createEventDefinition, EventBus } from './EventBus';
 import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
 import { SubscribeFn } from './types';
-import { subscribeDefinition, _defaultSubscriber } from './useBusReducer';
+import { reducerSubscribeDefinition, _defaultSubscriber } from './useBusReducer';
+import { stateSubscribeDefinition } from './useBusState';
 
 const bus = new EventBus();
 
@@ -87,6 +88,27 @@ it("should update state (options configuration)", () => {
   expect(result.current).toBe(1);
 });
 
+
+it("XYZ", () => {
+  const positiveNumberEvent = createEventDefinition<number>()("positive");
+  const negativeNumberEvent = createEventDefinition<number>()("negative");
+
+  const { result } = renderHook(() =>
+    useBusState.configure( {
+      subscriber: stateSubscribeDefinition(["positive", "negative"])})(0), {
+    wrapper
+  });
+
+  expect(result.current).toBe(0);
+
+  act(() => {
+    bus.publish(positiveNumberEvent(15));
+    bus.publish(negativeNumberEvent(-5));
+  });
+
+  expect(result.current).toBe(-5);
+});
+
 it("should update state", () => {
   const incrementEvent = createEventDefinition<number>()("increment");
 
@@ -107,7 +129,7 @@ it("should update state", () => {
 it("should subscribe to multiple events", () => {
   const { result } = renderHook(
     () => {
-      const reducer = useBusReducer.configure({ subscriber: subscribeDefinition(["increment", "decrement"]) })
+      const reducer = useBusReducer.configure({ subscriber: reducerSubscribeDefinition(["increment", "decrement"]) })
       return reducer(
         (
           state: { counter: number },

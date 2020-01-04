@@ -413,8 +413,9 @@ const useReducer = useBusReducer.configure({
     bus.subscribe("count.**", dispatch);
   }
 
-  /* the boilerplate code can be reduced by using the subscribeDefinition function.
-  subscriber: subscribeDefinition("count.**")
+  /* 
+  The boilerplate code can be reduced by using the reducerSubscribeDefinition function.
+  subscriber: reducerSubscribeDefinition("count.**")
   */
 
 });
@@ -424,9 +425,9 @@ const state = useReducer(/*...*/);
 
 Available options:
 
-| Option     | Description           |
-| ---------- | --------------------- |
-| subscriber | Subscriber definition |
+| Option     | Description                   |
+| ---------- | ----------------------------- |
+| subscriber | reducer subscriber definition |
 
 ### useBusState
 
@@ -459,6 +460,11 @@ You can configure useBusState with a subscriber passing in an options object.
 // get a new useState function
 const useState = useBusState.configure({
     subscriber: (dispatch, bus) => bus.subscribe("**", (ev) => dispatch(ev.payload))
+    
+    /* 
+    The boilerplate code can be reduced by using the stateSubscribeDefinition function.
+    subscriber: stateSubscribeDefinition("**")
+    */
 });
 
 const state = useState(/*...*/);
@@ -466,6 +472,6 @@ const state = useState(/*...*/);
 
 Available options:
 
-| Option     | Description         |
-| ---------- | ------------------- |
-| subscriber | Subscriber function |
+| Option     | Description                 |
+| ---------- | --------------------------- |
+| subscriber | State subscriber definition |
