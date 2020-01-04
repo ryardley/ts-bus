@@ -428,17 +428,6 @@ Available options:
 | ---------- | --------------------- |
 | subscriber | Subscriber definition |
 
-```ts
-// get a new useReducer function
-const useReducer = useBusReducer.configure({
-  subscriber: subscribeDefinition(["increment", "decrement"]) (dispatch, bus) => {
-    bus.subscribe("count.**", dispatch);
-  }
-});
-
-const state = useReducer(/*...*/);
-```
-
 ### useBusState
 
 This connects state changes to bus events via a useState equivalent function.
