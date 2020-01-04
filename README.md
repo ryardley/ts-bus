@@ -404,7 +404,7 @@ function Counter() {
 
 #### useBusReducer configuration
 
-You can configure useBusReducer with a subscriber passing in an options object.
+You can configure `useBusReducer` with a `subscriber` passing in an options object.
 
 ```ts
 // get a new useReducer function
@@ -412,6 +412,11 @@ const useReducer = useBusReducer.configure({
   subscriber: (dispatch, bus) => {
     bus.subscribe("count.**", dispatch);
   }
+
+  /* the boilerplate code can be reduced by using the subscribeDefinition function.
+  subscriber: subscribeDefinition("count.**")
+  */
+
 });
 
 const state = useReducer(/*...*/);
@@ -419,9 +424,20 @@ const state = useReducer(/*...*/);
 
 Available options:
 
-| Option     | Description         |
-| ---------- | ------------------- |
-| subscriber | Subscriber function |
+| Option     | Description           |
+| ---------- | --------------------- |
+| subscriber | Subscriber definition |
+
+```ts
+// get a new useReducer function
+const useReducer = useBusReducer.configure({
+  subscriber: subscribeDefinition(["increment", "decrement"]) (dispatch, bus) => {
+    bus.subscribe("count.**", dispatch);
+  }
+});
+
+const state = useReducer(/*...*/);
+```
 
 ### useBusState
 
