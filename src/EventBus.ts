@@ -72,9 +72,9 @@ function getEventType(descriptor: string | EventTypeDescriptor<any>) {
   return descriptor as string;
 }
 
-function filter(predicate: PredicateFn, handler: (a: any) => void) {
+function filter(predicates: PredicateFn[], handler: (a: any) => void) {
   return (event: any) => {
-    if (predicate(event)) return handler(event);
+    if (predicates.some(p => p(event))) return handler(event);
   };
 }
 
@@ -89,22 +89,28 @@ export class EventBus {
   };
 
   subscribe = <T extends BusEvent>(
-    subscription: SubscriptionDef<T>,
+    subscription: SubscriptionDef<T>[] | SubscriptionDef<T>,
     handler: (e: T) => void
   ) => {
-    if (isPredicateFn(subscription)) {
-      const filteredHandler = filter(subscription, handler);
+
+    const unsubscribers = new Array<() => EventEmitter>();
+
+    const subs = Array.isArray(subscription) ? subscription : [subscription];
+    const predicates = subs.filter(s => isPredicateFn(s)) as PredicateFn[];
+    const nonPredicates = subs.filter(s => !isPredicateFn(s)) as string | EventTypeDescriptor<T>[];
+
+    if (predicates.length > 0) {
+      const filteredHandler = filter(predicates, handler);
       this.emitter.on("**", filteredHandler);
-      return () => this.emitter.off("**", filteredHandler);
+      unsubscribers.push(() => this.emitter.off("**", filteredHandler));
     }
 
-    if (Array.isArray(subscription)) {
-      subscription.forEach(s => this.emitter.on(s, handler))
-      return () => subscription.forEach(s => this.emitter.off(s, handler))
+    for (let s of nonPredicates) {
+      const type = getEventType(s);
+      this.emitter.on(type, handler);
+      unsubscribers.push(() => this.emitter.off(type, handler));
     }
 
-    const type = getEventType(subscription);
-    this.emitter.on(type, handler);
-    return () => this.emitter.off(type, handler);
+    return () => unsubscribers.forEach(u => u());
   };
 }

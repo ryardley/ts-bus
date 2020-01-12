@@ -414,8 +414,8 @@ const useReducer = useBusReducer.configure({
   }
 
   /* 
-  The boilerplate code can be reduced by using the reducerSubscribeDefinition function.
-  subscriber: reducerSubscribeDefinition("count.**")
+  The boilerplate code can be reduced by using the reducerSubscriber function.
+  subscriber: reducerSubscriber("count.**")
   */
 
 });
@@ -462,8 +462,8 @@ const useState = useBusState.configure({
     subscriber: (dispatch, bus) => bus.subscribe("**", (ev) => dispatch(ev.payload))
     
     /* 
-    The boilerplate code can be reduced by using the stateSubscribeDefinition function.
-    subscriber: stateSubscribeDefinition("**")
+    The boilerplate code can be reduced by using the stateSubscriber function.
+    subscriber: stateSubscriber("**")
     */
 });
 

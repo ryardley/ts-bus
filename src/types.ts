@@ -16,7 +16,7 @@ export type DispatchFn<E> = (a: E) => void;
 
 export type UnsubscribeFn = () => any;
 
-export type SubscriptionDef<E extends BusEvent = BusEvent> = E["type"] | EventTypeDescriptor<E> | PredicateFn | string[]
+export type SubscriptionDef<E extends BusEvent = BusEvent> = E["type"] | EventTypeDescriptor<E> | PredicateFn | string
 
 export type SubscribeFn<E extends BusEvent> = (
   dispatch: DispatchFn<E>,

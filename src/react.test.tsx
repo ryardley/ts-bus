@@ -3,10 +3,9 @@ import { EventEmitter2 } from "eventemitter2";
 import React from "react";
 import { create } from "react-test-renderer";
 import { createEventDefinition, EventBus } from './EventBus';
-import { BusProvider, useBus, useBusReducer, useBusState } from "./react";
+import { BusProvider, useBus, useBusReducer, useBusState, stateSubscriber, reducerSubscriber } from "./react";
 import { SubscribeFn } from './types';
-import { reducerSubscribeDefinition, _defaultSubscriber } from './useBusReducer';
-import { stateSubscribeDefinition } from './useBusState';
+import { _defaultSubscriber } from './useBusReducer';
 
 const bus = new EventBus();
 
@@ -73,11 +72,13 @@ it("should update state (options configuration)", () => {
   const incrementEvent = createEventDefinition<number>()("counter.increment");
 
   const { result } = renderHook(() =>
-    useBusState.configure({subscriber: (dispatch, bus) => {
+    useBusState.configure({
+      subscriber: (dispatch, bus) => {
         return bus.subscribe("counter.**", (v) => dispatch(v.payload));
-      }})(0), {
-    wrapper
-  });
+      }
+    })(0), {
+      wrapper
+    });
 
   expect(result.current).toBe(0);
 
@@ -94,10 +95,11 @@ it("should update state by subscribing to multiple events", () => {
   const negativeNumberEvent = createEventDefinition<number>()("negative");
 
   const { result } = renderHook(() =>
-    useBusState.configure( {
-      subscriber: stateSubscribeDefinition(["positive", "negative"])})(0), {
-    wrapper
-  });
+    useBusState.configure({
+      subscriber: stateSubscriber("positive", "negative")
+    })(0), {
+      wrapper
+    });
 
   expect(result.current).toBe(0);
 
@@ -125,34 +127,31 @@ it("should update state", () => {
 });
 
 
-it("should subscribe to multiple events", () => {
+it("should not reduce for not subscribed event", () => {
   const { result } = renderHook(
     () => {
-      const reducer = useBusReducer.configure({ subscriber: reducerSubscribeDefinition(["increment", "decrement"]) })
+      const reducer = useBusReducer.configure({ subscriber: reducerSubscriber("increment", "decrement") })
       return reducer(
         (
           state: { counter: number },
           event: { type: string; payload: number }
         ) => {
           switch (event.type) {
-            case "increment": {
+            case "increment":
               return {
                 ...state,
                 counter: state.counter + 1
               };
-            }
-            case "decrement": {
+            case "decrement":
               return {
                 ...state,
                 counter: state.counter - 1
               };
-            }
-            case "multiply": {
+            case "multiply": // Must never be called
               return {
                 ...state,
                 counter: state.counter * 100
               };
-            }
           }
           return state;
         },
@@ -173,6 +172,70 @@ it("should subscribe to multiple events", () => {
   });
 
   expect(result.current.counter).toBe(1);
+});
+
+
+it("should reduce using multiple event subscription types", () => {
+  const minusFour = createEventDefinition()("minusFour");
+
+  const { result } = renderHook(
+    () => {
+      //x.payload != null && x.payload.counter == 3
+      const reducer = useBusReducer.configure({
+        subscriber: reducerSubscriber("increment", "decrement", minusFour, x => x.payload != null && x.payload >= 3)
+      })
+      return reducer(
+        (
+          state: { counter: number },
+          event: { type: string; payload: number }
+        ) => {
+          switch (event.type) {
+            case "increment":
+              return {
+                ...state,
+                counter: state.counter + 1
+              };
+            case "decrement":
+              return {
+                ...state,
+                counter: state.counter - 1
+              };
+            case "minusFour":
+              return {
+                ...state,
+                counter: state.counter - 4
+              };
+            case "multiply":
+              return {
+                ...state,
+                counter: state.counter * event.payload
+              };
+
+          }
+          return state;
+        },
+        { counter: 0 },
+        (a: any) => a
+      )
+    },
+    { wrapper }
+  );
+
+  expect(result.current.counter).toBe(0);
+
+  act(() => {
+    bus.publish({ type: "increment", payload: null }); // Reaches reducer
+    bus.publish({ type: "increment", payload: null }); // Reaches reducer
+    bus.publish({ type: "decrement", payload: null }); // Reaches reducer
+    bus.publish({ type: "increment", payload: null }); // Reaches reducer
+    bus.publish({ type: "multiply", payload: 2 }); // Does not reach reducer
+    bus.publish({ type: "multiply", payload: 3 }); // Reaches reducer
+    bus.publish({ type: "multiply", payload: 4 }); // Reaches reducer
+    bus.publish({ type: "multiply", payload: 2 }); // Reaches reducer
+    bus.publish(minusFour()); // Reaches reducer
+  });
+
+  expect(result.current.counter).toBe(20);
 });
 
 it("should reduce state", () => {

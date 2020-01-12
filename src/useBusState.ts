@@ -3,7 +3,7 @@ import { EventBus } from './EventBus';
 import { useBus } from "./react";
 import { BusEvent, DispatchFn, EventCreatorFn, SubscribeWithPayloadDispatchFn, SubscriptionDef, UnsubscribeFn } from './types';
 
-export const stateSubscribeDefinition = <E extends BusEvent>(definition: SubscriptionDef<E>): SubscribeWithPayloadDispatchFn<E> => {
+export const stateSubscriber = <E extends BusEvent>(...definition: SubscriptionDef<E>[]): SubscribeWithPayloadDispatchFn<E> => {
   return (dispatch: DispatchFn<E["payload"]>, bus: EventBus): UnsubscribeFn => {
     return bus.subscribe(definition, (ev: E) => dispatch(ev.payload))
   }
