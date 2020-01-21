@@ -1,7 +1,13 @@
 import { useLayoutEffect, useReducer } from "react";
-import { EventBus } from './EventBus';
+import { EventBus } from "./EventBus";
 import { useBus } from "./react";
-import { BusEvent, DispatchFn, SubscribeFn, SubscriptionDef, UnsubscribeFn } from './types';
+import {
+  BusEvent,
+  DispatchFn,
+  SubscribeFn,
+  SubscriptionDef,
+  UnsubscribeFn
+} from "./types";
 
 type InitFn<T> = (a: any) => T;
 type ReducerFn<S, E> = (s: S, e: E) => S;
@@ -17,30 +23,32 @@ export function _defaultSubscriber<E extends BusEvent>(
   return bus.subscribe<E>("**", dispatch);
 }
 
-export const reducerSubscriber = <E extends BusEvent>(...definition: SubscriptionDef<E>[]): SubscribeFn<E> => {
-  return (dispatch: DispatchFn<E>, bus: EventBus): UnsubscribeFn => {
-    return bus.subscribe(definition, dispatch)
-  }
-}
+export const reducerSubscriber = <E extends BusEvent>(
+  ...definition: SubscriptionDef<E>[]
+): SubscribeFn<E> => {
+  return (dispatch: DispatchFn<any>, bus: EventBus): UnsubscribeFn => {
+    return bus.subscribe(definition, dispatch);
+  };
+};
 
 const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
   subscriber: SubscribeFn<E>
-  ) => (
-    reducer: ReducerFn<T, E>,
-    initState: any,
-    init: InitFn<T> = indentity
-  ) => {
-    // Pull the bus from context
-    const bus = useBus();
+) => (
+  reducer: ReducerFn<T, E>,
+  initState: any,
+  init: InitFn<T> = indentity
+) => {
+  // Pull the bus from context
+  const bus = useBus();
 
-    // Run the reducer
-    const [state, dispatch] = useReducer(reducer, initState, init);
+  // Run the reducer
+  const [state, dispatch] = useReducer(reducer, initState, init);
 
-    // Run the subscriber synchronously
-    useLayoutEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
+  // Run the subscriber synchronously
+  useLayoutEffect(() => subscriber(dispatch, bus), [subscriber, dispatch, bus]);
 
-    return state;
-  };
+  return state;
+};
 
 export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
   reducer: ReducerFn<T, E>,
