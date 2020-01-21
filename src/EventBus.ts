@@ -1,11 +1,6 @@
 // Using EventEmitter2 in order to be able to use wildcards to subscribe to all events
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
-import {
-  BusEvent,
-  EventCreatorFn,
-  EventTypeDescriptor,
-  SubscriptionDef
-} from "./types";
+import { BusEvent, EventCreatorFn, EventTypeDescriptor } from "./types";
 
 function showWarning(msg: string) {
   /* istanbul ignore next */
@@ -14,7 +9,7 @@ function showWarning(msg: string) {
   }
 }
 
-export type PredicateFn = (...args: any[]) => boolean;
+export type PredicateFn<T> = (event: T) => boolean;
 
 function isEventDescriptor<T extends { type: string }>(
   descriptor: any
@@ -22,7 +17,7 @@ function isEventDescriptor<T extends { type: string }>(
   return !!descriptor && descriptor.eventType;
 }
 
-function isPredicateFn(descriptor: any): descriptor is PredicateFn {
+function isPredicateFn<T>(descriptor: any): descriptor is PredicateFn<T> {
   return !isEventDescriptor(descriptor) && typeof descriptor === "function";
 }
 
@@ -78,31 +73,55 @@ function getEventType(descriptor: string | EventTypeDescriptor<any>) {
   return descriptor as string;
 }
 
-function filter(predicate: PredicateFn, handler: (a: any) => void) {
+function filter<T>(predicate: PredicateFn<T>, handler: (a: any) => void) {
   return (event: any) => {
     if (predicate(event)) return handler(event);
   };
 }
 
+type SubscriptionDef<T extends BusEvent> =
+  | string
+  | EventCreatorFn<T>
+  | PredicateFn<T>
+  | T["type"];
+
 export class EventBus {
   emitter = new EventEmitter({ wildcard: true });
 
-  publish = <T extends BusEvent>(event: T, meta?: any) => {
+  publish<T extends BusEvent>(event: T, meta?: any) {
     this.emitter.emit(
       event.type,
       !meta ? event : { ...event, meta: { ...event.meta, ...meta } }
     );
-  };
+  }
 
-  subscribe = <T extends BusEvent>(
-    subscription: SubscriptionDef<T>[] | SubscriptionDef<T>,
+  // Using overloads to ensure passing in event creator functions resukts in correct typings
+  // TODO: How to create a test to guard against regressions?
+  subscribe<T extends BusEvent>(
+    subscription: string,
+    handler: (e: BusEvent) => void
+  ): () => void;
+  subscribe<T extends BusEvent>(
+    subscription: EventCreatorFn<T>,
+    handler: (e: ReturnType<typeof subscription>) => void
+  ): () => void;
+  subscribe<T extends BusEvent>(
+    subscription: PredicateFn<T>,
     handler: (e: T) => void
-  ) => {
+  ): () => void;
+  subscribe<T extends { type: string }>(
+    subscription: T["type"],
+    handler: (e: T) => void
+  ): () => void;
+  subscribe<T extends BusEvent>(
+    subscription: SubscriptionDef<T> | SubscriptionDef<T>[],
+    handler: (e: T) => void
+  ): () => void {
     // store emitter on closure
     const emitter = this.emitter;
 
     const subscribeToSubdef = (subdef: SubscriptionDef<T>) => {
-      if (isPredicateFn(subdef)) {
+      if (isPredicateFn<T>(subdef)) {
         const filteredHandler = filter(subdef, handler);
         emitter.on("**", filteredHandler);
         return () => emitter.off("**", filteredHandler);
@@ -119,5 +138,5 @@ export class EventBus {
 
     const unsubscribers = subs.map(subscribeToSubdef);
     return () => unsubscribers.forEach(u => u());
-  };
+  }
 }
