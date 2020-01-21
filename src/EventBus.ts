@@ -1,6 +1,11 @@
 // Using EventEmitter2 in order to be able to use wildcards to subscribe to all events
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
-import { BusEvent, EventCreatorFn, EventTypeDescriptor } from "./types";
+import {
+  BusEvent,
+  EventCreatorFn,
+  SubscriptionDef,
+  EventTypeDescriptor
+} from "./types";
 
 function showWarning(msg: string) {
   /* istanbul ignore next */
@@ -78,12 +83,6 @@ function filter<T>(predicate: PredicateFn<T>, handler: (a: any) => void) {
     if (predicate(event)) return handler(event);
   };
 }
-
-type SubscriptionDef<T extends BusEvent> =
-  | string
-  | EventCreatorFn<T>
-  | PredicateFn<T>
-  | T["type"];
 
 export class EventBus {
   emitter = new EventEmitter({ wildcard: true });
