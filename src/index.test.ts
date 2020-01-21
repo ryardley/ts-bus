@@ -153,6 +153,40 @@ describe("Basic usage", () => {
 
     expect(handleSubscription.mock.calls.length).toBe(4);
   });
+
+  describe("multi subscription", () => {
+    it("should subscribe to multiple events at once", () => {
+      const handleSubscription = jest.fn();
+
+      // create event creator
+      type GreetEvent = {
+        type: "greet";
+        payload: { message: string };
+      };
+
+      const greetEvent = defineEvent<GreetEvent>("greet");
+      const testFooEvent = defineEvent<{ type: "test.foo"; payload: string }>(
+        "test.foo"
+      );
+      const otherEvent = defineEvent<{
+        type: "notsubscribed";
+        payload: string;
+      }>("notsubscribed");
+      const myTargetedEventType = "test.**";
+      const bus = new EventBus();
+      bus.subscribe([greetEvent, myTargetedEventType], handleSubscription);
+
+      bus.publish(greetEvent({ message: "Hello!" })); // Should be subscribed
+      bus.publish(testFooEvent("Foo")); // Should be subscribed
+      bus.publish(otherEvent("Nope")); // Should not be subscribed
+
+      expect(handleSubscription.mock.calls).toMatchObject([
+        [{ type: "greet" }],
+        [{ type: "test.foo" }]
+      ]);
+    });
+  });
+
   describe("metadata", () => {
     it("should be able to send metadata", () => {
       // mock subscription

@@ -1,6 +1,11 @@
 // Using EventEmitter2 in order to be able to use wildcards to subscribe to all events
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
-import { BusEvent, EventTypeDescriptor, EventCreatorFn } from "./types";
+import {
+  BusEvent,
+  EventCreatorFn,
+  EventTypeDescriptor,
+  SubscriptionDef
+} from "./types";
 
 function showWarning(msg: string) {
   /* istanbul ignore next */
@@ -9,7 +14,7 @@ function showWarning(msg: string) {
   }
 }
 
-type PredicateFn = (...args: any[]) => boolean;
+export type PredicateFn = (...args: any[]) => boolean;
 
 function isEventDescriptor<T extends { type: string }>(
   descriptor: any
@@ -35,6 +40,7 @@ export function createEventDefinition<P = void>(
       // Allow runtime payload checking for plain JavaScript usage
       if (options && payload) {
         const testFn = typeof options === "function" ? options : options.test;
+        /* istanbul ignore next */
         if (testFn && !testFn(payload)) {
           showWarning(
             `${JSON.stringify(payload)} does not match expected payload.`
@@ -89,17 +95,29 @@ export class EventBus {
   };
 
   subscribe = <T extends BusEvent>(
-    eventType: T["type"] | EventTypeDescriptor<T> | PredicateFn,
+    subscription: SubscriptionDef<T>[] | SubscriptionDef<T>,
     handler: (e: T) => void
   ) => {
-    if (isPredicateFn(eventType)) {
-      const filteredHandler = filter(eventType, handler);
-      this.emitter.on("**", filteredHandler);
-      return () => this.emitter.off("**", filteredHandler);
-    }
+    // store emitter on closure
+    const emitter = this.emitter;
 
-    const type = getEventType(eventType);
-    this.emitter.on(type, handler);
-    return () => this.emitter.off(type, handler);
+    const subscribeToSubdef = (subdef: SubscriptionDef<T>) => {
+      if (isPredicateFn(subdef)) {
+        const filteredHandler = filter(subdef, handler);
+        emitter.on("**", filteredHandler);
+        return () => emitter.off("**", filteredHandler);
+      }
+
+      const type = getEventType(subdef);
+
+      emitter.on(type, handler);
+
+      return () => emitter.off(type, handler);
+    };
+
+    const subs = Array.isArray(subscription) ? subscription : [subscription];
+
+    const unsubscribers = subs.map(subscribeToSubdef);
+    return () => unsubscribers.forEach(u => u());
   };
 }

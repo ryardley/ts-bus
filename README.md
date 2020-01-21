@@ -404,7 +404,7 @@ function Counter() {
 
 #### useBusReducer configuration
 
-You can configure useBusReducer with a subscriber passing in an options object.
+You can configure `useBusReducer` with a `subscriber` passing in an options object.
 
 ```ts
 // get a new useReducer function
@@ -412,6 +412,12 @@ const useReducer = useBusReducer.configure({
   subscriber: (dispatch, bus) => {
     bus.subscribe("count.**", dispatch);
   }
+
+  /* 
+  The boilerplate code can be reduced by using the reducerSubscriber function.
+  subscriber: reducerSubscriber("count.**")
+  */
+
 });
 
 const state = useReducer(/*...*/);
@@ -419,9 +425,9 @@ const state = useReducer(/*...*/);
 
 Available options:
 
-| Option     | Description         |
-| ---------- | ------------------- |
-| subscriber | Subscriber function |
+| Option     | Description                   |
+| ---------- | ----------------------------- |
+| subscriber | reducer subscriber definition |
 
 ### useBusState
 
@@ -454,6 +460,11 @@ You can configure useBusState with a subscriber passing in an options object.
 // get a new useState function
 const useState = useBusState.configure({
     subscriber: (dispatch, bus) => bus.subscribe("**", (ev) => dispatch(ev.payload))
+    
+    /* 
+    The boilerplate code can be reduced by using the stateSubscriber function.
+    subscriber: stateSubscriber("**")
+    */
 });
 
 const state = useState(/*...*/);
@@ -461,6 +472,6 @@ const state = useState(/*...*/);
 
 Available options:
 
-| Option     | Description         |
-| ---------- | ------------------- |
-| subscriber | Subscriber function |
+| Option     | Description                 |
+| ---------- | --------------------------- |
+| subscriber | State subscriber definition |
