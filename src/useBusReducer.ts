@@ -32,7 +32,8 @@ export const reducerSubscriber = <E extends BusEvent>(
 };
 
 const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
-  subscriber: SubscribeFn<E>
+  subscriber: SubscribeFn<E> = _defaultSubscriber,
+  useReducer: typeof React.useReducer = React.useReducer
 ) => (
   reducer: ReducerFn<T, E>,
   initState: any,
@@ -42,7 +43,7 @@ const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
   const bus = useBus();
 
   // Run the reducer
-  const [state, dispatch] = React.useReducer(reducer, initState, init);
+  const [state, dispatch] = useReducer(reducer, initState, init);
 
   // Run the subscriber synchronously
   React.useLayoutEffect(() => subscriber(dispatch, bus), [
@@ -65,11 +66,12 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
 }
 
 type UseBusReducerOptions<E extends BusEvent> = {
-  subscriber: SubscribeFn<E>;
+  subscriber?: SubscribeFn<E>;
+  useReducer?: typeof React.useReducer;
 };
 
 useBusReducer.configure = <E extends BusEvent = BusEvent>(
   options: UseBusReducerOptions<E>
 ) => {
-  return useReducerCreator(options.subscriber);
+  return useReducerCreator(options.subscriber, options.useReducer);
 };
