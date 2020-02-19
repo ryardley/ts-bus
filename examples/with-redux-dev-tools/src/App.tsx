@@ -28,13 +28,13 @@ function App() {
   const state = useConfiguredBusReducer(
     (state, action) => {
       switch (action.type) {
-        case increment.toString(): {
+        case `${increment}`: {
           return {
             ...state,
             count: state.count + 1
           };
         }
-        case decrement.toString(): {
+        case `${decrement}`: {
           return {
             ...state,
             count: state.count - 1
