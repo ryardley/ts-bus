@@ -11,7 +11,7 @@ import {
   stateSubscriber,
   reducerSubscriber
 } from "./react";
-import { SubscribeFn } from "./types";
+import { SubscribeFn, BusEvent } from "./types";
 import { _defaultSubscriber } from "./useBusReducer";
 
 const bus = new EventBus();
@@ -196,13 +196,12 @@ it("should reduce using multiple event subscription types", () => {
 
   const { result } = renderHook(
     () => {
-      //x.payload != null && x.payload.counter == 3
       const reducer = useBusReducer.configure({
         subscriber: reducerSubscriber(
           "increment",
           "decrement",
           minusFour,
-          x => x.payload != null && x.payload >= 3
+          (x: BusEvent) => x.payload !== null && x.payload >= 3
         )
       });
       return reducer(
