@@ -28,6 +28,20 @@
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.1"
   },
+  "keywords": [
+    "redux",
+    "react",
+    "event",
+    "events",
+    "event driven architecture",
+    "actions",
+    "event bus",
+    "pubsub",
+    "event sourcing",
+    "typescript",
+    "bus",
+    "ts-bus"
+  ],
   "resolutions": {
     "**/lodash": "4.17.13",
     "**/lodash.template": "4.5.0"
