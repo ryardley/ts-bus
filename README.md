@@ -456,8 +456,8 @@ const useConfiguredBusReducer = window.__REDUX_DEVTOOLS_EXTENSION__
     })
   : useBusReducer;
 
-const increment = createEventDefinition<void>()("increment");
-const decrement = createEventDefinition<void>()("decrement");
+const increment = createEventDefinition()("increment");
+const decrement = createEventDefinition()("decrement");
 
 function App() {
   const b = useBus();
