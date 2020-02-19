@@ -9,9 +9,13 @@ import {
   UnsubscribeFn
 } from "./types";
 
-type InitFn<T> = (a: any) => T;
-type ReducerFn<S, E> = (s: S, e: E) => S;
-
+export type InitFn<T> = (a: any) => T;
+export type ReducerFn<S, E> = (s: S, e: E) => S;
+export type UseReducerFn<T, E> = (
+  reducer: ReducerFn<T, E>,
+  initState: any,
+  init: InitFn<T>
+) => [T, any];
 function indentity<T>(a: T) {
   return a;
 }
@@ -33,7 +37,7 @@ export const reducerSubscriber = <E extends BusEvent>(
 
 const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
   subscriber: SubscribeFn<E> = _defaultSubscriber,
-  useReducer: typeof React.useReducer = React.useReducer
+  useReducer: UseReducerFn<any, E> = React.useReducer
 ) => (
   reducer: ReducerFn<T, E>,
   initState: any,
@@ -65,9 +69,9 @@ export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
   return useReducerFn(reducer, initState, init);
 }
 
-type UseBusReducerOptions<E extends BusEvent> = {
+type UseBusReducerOptions<E extends BusEvent, T = any> = {
   subscriber?: SubscribeFn<E>;
-  useReducer?: typeof React.useReducer;
+  useReducer?: (reducer: ReducerFn<T, E>, initState: T, init: InitFn<T>) => any;
 };
 
 useBusReducer.configure = <E extends BusEvent = BusEvent>(

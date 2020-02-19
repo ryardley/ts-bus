@@ -431,56 +431,60 @@ You can use ts-bus with Redux Devtools by using [Reinspect](https://github.com/t
 
 Here is an example:
 
-First ensure your app is connected with the StateInspector.
-
 ```tsx
 import React from "react";
-import { StateInspector } from "reinspect";
-import App from "./App";
+import { StateInspector, useReducer } from "reinspect";
+import { EventBus, createEventDefinition } from "ts-bus";
+import { BusProvider, useBus, useBusReducer } from "ts-bus/react";
 
-function AppWrapper() {
+const bus = new EventBus();
+
+export default function AppWrapper() {
   return (
-    <StateInspector name="App">
-      <App />
-    </StateInspector>
+    <BusProvider value={bus}>
+      <StateInspector name="App">
+        <App />
+      </StateInspector>
+    </BusProvider>
   );
 }
 
-export default AppWrapper;
-```
+const useConfiguredBusReducer = useBusReducer.configure({
+  useReducer: (reducer, initState, initializer) =>
+    useReducer(reducer, initState, initializer, "appreducer") // passing in the reinspect id
+});
 
-```tsx
-import { useReducer } from 'reinspect';
-import { useBus, useBusReducer } from "ts-bus/react";
-import { id } from './constants';
+const increment = createEventDefinition<void>()("increment");
+const decrement = createEventDefinition<void>()("decrement");
 
-function Counter() {
-  const bus = useBus();
-  const useConfiguredBusReducer = useBusReducer.configure({
-    useReducer: (...args) => useReducer(...args, id) // passing in the reinspect id
-  });
-
-  const state = useBusReducer((state, event) {
-    switch (event.type) {
-      case "counter.increment":
-        return { count: state.count + 1 };
-      case "counter.decrement":
-        return { count: state.count - 1 };
-      default:
-        throw new Error();
-    }
-  }, { count: 0 });
+function App() {
+  const b = useBus();
+  const state = useConfiguredBusReducer(
+    (state, action) => {
+      switch (action.type) {
+        case increment.toString(): {
+          return {
+            ...state,
+            count: state.count + 1
+          };
+        }
+        case decrement.toString(): {
+          return {
+            ...state,
+            count: state.count - 1
+          };
+        }
+      }
+      return state;
+    },
+    { count: 0 }
+  );
 
   return (
-    <>
-      Count: {state.count}
-      <button onClick={() => bus.publish({ type: "counter.increment" })}>
-        +
-      </button>
-      <button onClick={() => bus.publish({ type: "counter.decrement" })}>
-        -
-      </button>
-    </>
+    <div>
+      <button onClick={() => b.publish(decrement())}>-</button>
+      {state.count} <button onClick={() => b.publish(increment())}>+</button>
+    </div>
   );
 }
 ```
