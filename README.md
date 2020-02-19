@@ -449,10 +449,12 @@ export default function AppWrapper() {
   );
 }
 
-const useConfiguredBusReducer = useBusReducer.configure({
-  useReducer: (reducer, initState, initializer) =>
-    useReducer(reducer, initState, initializer, "appreducer") // passing in the reinspect id
-});
+const useConfiguredBusReducer = window.__REDUX_DEVTOOLS_EXTENSION__
+  ? useBusReducer.configure({
+      useReducer: (reducer, initState, initializer) =>
+        useReducer(reducer, initState, initializer, "MyApp") // passing in the reinspect id
+    })
+  : useBusReducer;
 
 const increment = createEventDefinition<void>()("increment");
 const decrement = createEventDefinition<void>()("decrement");
