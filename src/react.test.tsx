@@ -349,6 +349,31 @@ it("should subscribe state", () => {
   expect(result.current.counter).toBe(1);
 });
 
+it("should use an alternate useReducer", () => {
+  const mockUseReducer = jest.fn(
+    (reducer: any, initialState: any, initializer: any) => {
+      return React.useReducer(reducer, initialState, initializer);
+    }
+  );
+
+  const reducer = (state: { counter: number }) => {
+    return state;
+  };
+  const init = { counter: 0 };
+  const ident = (a: any) => a;
+  renderHook(
+    () => {
+      const useReducer = useBusReducer.configure({
+        useReducer: mockUseReducer
+      });
+      return useReducer(reducer, init, ident);
+    },
+    { wrapper }
+  );
+
+  expect(mockUseReducer).toBeCalledWith(reducer, init, ident);
+});
+
 it("should not loose events during the render cycle when mounted.", done => {
   const myBus = new EventBus();
   const reducer = jest.fn(s => s);

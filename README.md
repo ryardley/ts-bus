@@ -402,9 +402,9 @@ function Counter() {
 }
 ```
 
-#### useBusReducer configuration
+### Custom subscriber function
 
-You can configure `useBusReducer` with a `subscriber` passing in an options object.
+You can configure `useBusReducer` with a custom `subscriber` passing in an options object.
 
 ```ts
 // get a new useReducer function
@@ -412,22 +412,91 @@ const useReducer = useBusReducer.configure({
   subscriber: (dispatch, bus) => {
     bus.subscribe("count.**", dispatch);
   }
-
-  /* 
-  The boilerplate code can be reduced by using the reducerSubscriber function.
-  subscriber: reducerSubscriber("count.**")
-  */
-
 });
 
 const state = useReducer(/*...*/);
 ```
 
+NOTE: Boilerplate can be reduced by using the `reducerSubscriber` function.
+
+```ts
+useBusReducer.configure({
+  subscriber: reducerSubscriber("count.**")
+});
+```
+
+#### Usage with Redux dev tools
+
+You can use ts-bus with Redux Devtools by using [Reinspect](https://github.com/troch/reinspect).
+
+Here is an example:
+
+```tsx
+import React from "react";
+import { StateInspector, useReducer } from "reinspect";
+import { EventBus, createEventDefinition } from "ts-bus";
+import { BusProvider, useBus, useBusReducer } from "ts-bus/react";
+
+const bus = new EventBus();
+
+export default function AppWrapper() {
+  return (
+    <BusProvider value={bus}>
+      <StateInspector name="App">
+        <App />
+      </StateInspector>
+    </BusProvider>
+  );
+}
+
+const useConfiguredBusReducer = useBusReducer.configure({
+  useReducer: (reducer, initState, initializer) =>
+    useReducer(reducer, initState, initializer, "appreducer") // passing in the reinspect id
+});
+
+const increment = createEventDefinition<void>()("increment");
+const decrement = createEventDefinition<void>()("decrement");
+
+function App() {
+  const b = useBus();
+  const state = useConfiguredBusReducer(
+    (state, action) => {
+      switch (action.type) {
+        case increment.toString(): {
+          return {
+            ...state,
+            count: state.count + 1
+          };
+        }
+        case decrement.toString(): {
+          return {
+            ...state,
+            count: state.count - 1
+          };
+        }
+      }
+      return state;
+    },
+    { count: 0 }
+  );
+
+  return (
+    <div>
+      <button onClick={() => b.publish(decrement())}>-</button>
+      {state.count} <button onClick={() => b.publish(increment())}>+</button>
+    </div>
+  );
+}
+```
+
+#### useBusReducer configuration
+
 Available options:
 
-| Option     | Description                   |
-| ---------- | ----------------------------- |
-| subscriber | reducer subscriber definition |
+| Option     | Description                               |
+| ---------- | ----------------------------------------- |
+| subscriber | Reducer subscriber definition             |
+| useReducer | Alternate React.useReducer implementation |
 
 ### useBusState
 
@@ -459,15 +528,18 @@ You can configure useBusState with a subscriber passing in an options object.
 ```ts
 // get a new useState function
 const useState = useBusState.configure({
-    subscriber: (dispatch, bus) => bus.subscribe("**", (ev) => dispatch(ev.payload))
-    
-    /* 
-    The boilerplate code can be reduced by using the stateSubscriber function.
-    subscriber: stateSubscriber("**")
-    */
+  subscriber: (dispatch, bus) => bus.subscribe("**", ev => dispatch(ev.payload))
 });
 
 const state = useState(/*...*/);
+```
+
+NOTE: The boilerplate code can be reduced by using the stateSubscriber function.
+
+```ts
+const useState = useBusState.configure({
+  subscriber: stateSubscriber("**")
+});
 ```
 
 Available options:
