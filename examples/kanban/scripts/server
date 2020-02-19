@@ -1,5 +1,0 @@
-#!/bin/bash 
-set -e
-set -x
-
-./node_modules/.bin/ts-node --project tsconfig.server.json server 
