@@ -76,7 +76,7 @@ it("should not reduce for not subscribed event", () => {
     { wrapper }
   );
 
-  expect(result.current.counter).toBe(0);
+  expect(result.current[0].counter).toBe(0);
 
   act(() => {
     bus.publish({ type: "increment", payload: null });
@@ -85,7 +85,7 @@ it("should not reduce for not subscribed event", () => {
     bus.publish({ type: "decrement", payload: null });
   });
 
-  expect(result.current.counter).toBe(1);
+  expect(result.current[0].counter).toBe(1);
 });
 
 it("should reduce using multiple event subscription types", () => {
@@ -137,7 +137,7 @@ it("should reduce using multiple event subscription types", () => {
     { wrapper }
   );
 
-  expect(result.current.counter).toBe(0);
+  expect(result.current[0].counter).toBe(0);
 
   act(() => {
     bus.publish({ type: "increment", payload: null }); // Reaches reducer
@@ -151,7 +151,7 @@ it("should reduce using multiple event subscription types", () => {
     bus.publish(minusFour()); // Reaches reducer
   });
 
-  expect(result.current.counter).toBe(20);
+  expect(result.current[0].counter).toBe(20);
 });
 
 it("should reduce state", () => {
@@ -184,14 +184,14 @@ it("should reduce state", () => {
     { wrapper }
   );
 
-  expect(result.current.counter).toBe(0);
+  expect(result.current[0].counter).toBe(0);
 
   act(() => {
     bus.publish({ type: "increment", payload: null });
     bus.publish({ type: "increment", payload: null });
     bus.publish({ type: "increment", payload: null });
   });
-  expect(result.current.counter).toBe(3);
+  expect(result.current[0].counter).toBe(3);
 });
 
 it("should subscribe state", () => {
@@ -235,7 +235,7 @@ it("should subscribe state", () => {
     { wrapper }
   );
 
-  expect(result.current.counter).toBe(0);
+  expect(result.current[0].counter).toBe(0);
 
   act(() => {
     bus.publish({ type: "count.increment", payload: null });
@@ -243,7 +243,53 @@ it("should subscribe state", () => {
   });
 
   // Reset should have no effect because of subscriber
-  expect(result.current.counter).toBe(1);
+  expect(result.current[0].counter).toBe(1);
+});
+
+it("should return a dispatch function that aliases bus.publish()", () => {
+  const { result } = renderHook(
+    () => {
+      return useBusReducer(
+        (
+          state: { counter: number },
+          event: { type: string; payload: number }
+        ) => {
+          switch (event.type) {
+            case "count.increment": {
+              return {
+                ...state,
+                counter: state.counter + 1
+              };
+            }
+            case "count.decrement": {
+              return {
+                ...state,
+                counter: state.counter - 1
+              };
+            }
+            case "reset": {
+              return {
+                ...state,
+                counter: 0
+              };
+            }
+          }
+          return state;
+        },
+        { counter: 0 }
+      );
+    },
+    { wrapper }
+  );
+
+  expect(result.current[0].counter).toBe(0);
+
+  act(() => {
+    const dispatch = result.current[1];
+    dispatch({ type: "count.increment", payload: null });
+  });
+
+  expect(result.current[0].counter).toBe(1);
 });
 
 it("should use an alternate useReducer", () => {
