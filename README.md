@@ -57,11 +57,21 @@ For my purposes I wanted a system that:
 Version 3 includes a couple of breaking changes to the react extensions. Now both `useBusState` and `useBusReducer` return tuples the same as their React equivalents.
 
 ```ts
+// Old 
+const state = useBusReducer(/* ... */);
+
+// New 
 const [state, dispatch] = useBusReducer(/* ... */);
 ```
 
 ```ts
-const [count, setCount] = useBusState(0, eventCreator);
+// Old
+const count = useBusState(0, eventCreator);
+
+// New
+const useState = useBusState.configure(eventCreator);
+
+const [count, setCount] = useState(0);
 ```
 
 Also the configuration for useBusState has changed.
