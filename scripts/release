@@ -2,7 +2,16 @@
 
 set -e
 
-if [ -z "$1" ]; then 
+# Save first arg to VERSION
+VERSION=$1
+
+# Move arg pointer
+shift
+
+# Rest of the args are --tag foo
+TAGS=$@
+
+if [ -z "$VERSION" ]; then 
   echo "Please provide update type: patch, minor major"
   exit 1;
 fi
@@ -12,13 +21,18 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1;
 fi
 
+if [ ! -z "$TAGS" ]; then 
+  echo "This will use the tags: $TAGS"
+  read
+fi
+
 yarn test
 yarn build
-npm version $1
+npm version $VERSION
 git push --tags && git push
 cp README.md dist
 cp logo.png dist
 cp package.json dist
 cd dist
-npm publish $2
+npm publish $TAGS
 
