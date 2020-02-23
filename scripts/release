@@ -20,4 +20,5 @@ cp README.md dist
 cp logo.png dist
 cp package.json dist
 cd dist
-npm publish
+npm publish $2
+
