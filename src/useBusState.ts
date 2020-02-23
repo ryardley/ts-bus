@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useCallback } from "react";
 import { EventBus } from "./EventBus";
 import { useBus } from "./react";
 import {
@@ -18,7 +18,13 @@ export const stateSubscriber = <E extends BusEvent>(
   };
 };
 
+type UseStateReturnTuple<E extends BusEvent> = [
+  E["payload"],
+  (a: E["payload"]) => void
+];
+
 const useStateCreator = <E extends BusEvent = BusEvent>(
+  dispatchEventCreator: EventCreatorFn<E>,
   subscriber: SubscribeWithPayloadDispatchFn<E>
 ) => (initState: E["payload"] | (() => E["payload"])) => {
   const bus = useBus();
@@ -27,16 +33,21 @@ const useStateCreator = <E extends BusEvent = BusEvent>(
 
   useLayoutEffect(() => subscriber(dispatch, bus), [dispatch, bus]);
 
-  return state;
+  const dispatchFn = useCallback(
+    (value: E["payload"]) => {
+      bus.publish(dispatchEventCreator(value));
+    },
+    [bus]
+  );
+
+  return [state, dispatchFn] as UseStateReturnTuple<E>;
 };
 
 export function useBusState<E extends BusEvent = BusEvent>(
   initState: E["payload"] | undefined,
   event: EventCreatorFn<E>
-): E["payload"] {
-  const bus = useBus();
-
-  const useState = useStateCreator((dispatch, bus) => {
+) {
+  const useState = useStateCreator(event, (dispatch, bus) => {
     return bus.subscribe(event, (ev: E) => dispatch(ev.payload));
   });
   return useState(initState);
@@ -47,7 +58,8 @@ type UseBusStateOptions<E extends BusEvent> = {
 };
 
 useBusState.configure = <E extends BusEvent = BusEvent>(
+  event: EventCreatorFn<E>,
   options: UseBusStateOptions<E>
 ) => {
-  return useStateCreator(options.subscriber);
+  return useStateCreator(event, options.subscriber);
 };

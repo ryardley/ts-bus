@@ -52,6 +52,22 @@ For my purposes I wanted a system that:
 - RxJS - could make a great event bus but feels too heavy handed for use with many projects.
 - Node `events` - is a little too much API for what I need here. This lib actually decorates the `EventEmitter2` package. In the future I may remove it to become dependency free.
 
+## Upgrading to v3
+
+Version 3 includes a couple of breaking changes to the react extensions. Now both `useBusState` and `useBusReducer` return tuples the same as their React equivalents.
+
+```ts
+const [state, dispatch] = useBusReducer(/* ... */);
+```
+
+```ts
+const [count, setCount] = useBusState(0, eventCreator);
+```
+
+Also the configuration for useBusState has changed.
+
+See [useBusReducer](#useBusReducer), [useBusState](#useBusState).
+
 ## Installation
 
 Use your favourite npm client to install ts-bus. Types are included automatically.
@@ -366,7 +382,9 @@ Example:
 function init(initCount: number) {
   return { count: initCount };
 }
-const state = useBusReducer(reducer, initCount, init);
+
+// dispatch is an alias to bus.publish() you can use either
+const [state, dispatch] = useBusReducer(reducer, initCount, init);
 ```
 
 ```tsx
@@ -387,16 +405,14 @@ function reducer(state, event) {
 
 function Counter() {
   const bus = useBus();
-  const state = useBusReducer(reducer, initialState);
+  const [state, dispatch] = useBusReducer(reducer, initialState);
   return (
     <>
       Count: {state.count}
       <button onClick={() => bus.publish({ type: "counter.increment" })}>
         +
       </button>
-      <button onClick={() => bus.publish({ type: "counter.decrement" })}>
-        -
-      </button>
+      <button onClick={() => dispatch({ type: "counter.decrement" })}>-</button>
     </>
   );
 }
@@ -414,7 +430,7 @@ const useReducer = useBusReducer.configure({
   }
 });
 
-const state = useReducer(/*...*/);
+const [state, dispatch] = useReducer(/*...*/);
 ```
 
 NOTE: Boilerplate can be reduced by using the `reducerSubscriber` function.
@@ -433,7 +449,7 @@ Here is an example:
 
 ```tsx
 import React from "react";
-import { StateInspector, useReducer } from "reinspect";
+import { StateInspector, useReducer as useReinspectReducer } from "reinspect";
 import { EventBus, createEventDefinition } from "ts-bus";
 import { BusProvider, useBus, useBusReducer } from "ts-bus/react";
 
@@ -449,19 +465,20 @@ export default function AppWrapper() {
   );
 }
 
-const useConfiguredBusReducer = window.__REDUX_DEVTOOLS_EXTENSION__
-  ? useBusReducer.configure({
-      useReducer: (reducer, initState, initializer) =>
-        useReducer(reducer, initState, initializer, "MyApp") // passing in the reinspect id
-    })
-  : useBusReducer;
+const useReducer =
+  process.env.NODE_ENV === "development" && window.__REDUX_DEVTOOLS_EXTENSION__
+    ? useBusReducer.configure({
+        useReducer: (reducer, initState, initializer) =>
+          useReinspectReducer(reducer, initState, initializer, "MyApp") // passing in the reinspect id
+      })
+    : useBusReducer;
 
 const increment = createEventDefinition()("increment");
 const decrement = createEventDefinition()("decrement");
 
 function App() {
   const b = useBus();
-  const state = useConfiguredBusReducer(
+  const [state] = useReducer(
     (state, action) => {
       switch (action.type) {
         case `${increment}`: {
@@ -511,7 +528,7 @@ const setCountEvent = createEventDefinition<number>()("SET_COUNT");
 
 function Counter() {
   const bus = useBus();
-  const count = useBusState(0, setCountEvent);
+  const [count] = useBusState(0, setCountEvent);
 
   return (
     <>
@@ -523,13 +540,65 @@ function Counter() {
 }
 ```
 
+#### Preconfigured useBusState
+
+You can preconfigure useState to use a specific eventCreator and you get a drop in replacement for setState that is hooked up to the event bus.
+
+Here is a more complete example:
+
+```ts
+// events.ts
+export const bus = new EventBus();
+
+export const setCountEvent = createEventDefinition<number>()("SET_COUNT");
+
+bus.subscribe(setCountEvent, event => {
+  console.log(`Setting count to ${event.payload}`);
+});
+```
+
+```tsx
+// App.ts
+import { bus } from "./events";
+
+export default function App() {
+  return (
+    <BusProvider value={bus}>
+      <Counter />
+    </BusProvider>
+  );
+}
+// ...
+```
+
+```tsx
+// Counter.ts
+import { useBus, useBusState } from "ts-bus/react";
+import { setCountEvent } from "./events";
+
+const useState = useBusState(setCountEvent);
+
+function Counter() {
+  const bus = useBus();
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      Count: {count}
+      <button onClick={() => bus.publish(setCount(count + 1))}>+</button>
+      <button onClick={() => bus.publish(setCount(count - 1))}>-</button>
+    </>
+  );
+}
+```
+
 #### useBusState configuration
 
 You can configure useBusState with a subscriber passing in an options object.
 
 ```ts
 // get a new useState function
-const useState = useBusState.configure({
+const useState = useBusState.configure(someEvent, {
   subscriber: (dispatch, bus) => bus.subscribe("**", ev => dispatch(ev.payload))
 });
 
@@ -539,7 +608,7 @@ const state = useState(/*...*/);
 NOTE: The boilerplate code can be reduced by using the stateSubscriber function.
 
 ```ts
-const useState = useBusState.configure({
+const useState = useBusState.configure(someEvent, {
   subscriber: stateSubscriber("**")
 });
 ```

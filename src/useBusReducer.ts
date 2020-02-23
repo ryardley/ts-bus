@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { EventBus } from "./EventBus";
 import { useBus } from "./react";
 import {
@@ -56,7 +56,14 @@ const useReducerCreator = <E extends BusEvent = BusEvent, T = any>(
     bus
   ]);
 
-  return state;
+  const dispatchFn = useCallback(
+    (event: BusEvent) => {
+      bus.publish(event);
+    },
+    [bus]
+  );
+
+  return [state, dispatchFn];
 };
 
 export function useBusReducer<E extends BusEvent = BusEvent, T = any>(
