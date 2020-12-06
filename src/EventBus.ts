@@ -14,7 +14,7 @@ function showWarning(msg: string) {
   }
 }
 
-export type PredicateFn<T> = (event: T) => boolean;
+type PredicateFn<T> = (event: T) => boolean | ((event: T) => event is T);
 
 function isEventDescriptor<T extends { type: string }>(
   descriptor: any
